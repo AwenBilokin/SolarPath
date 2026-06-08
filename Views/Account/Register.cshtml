@@ -1,0 +1,45 @@
+@{ViewData["Title"] = "Реєстрація";}
+
+<div class="row justify-content-center py-4">
+  <div class="col-md-5 col-lg-4">
+    <div class="auth-card">
+      <div class="text-center mb-4">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <i class="bi bi-person-plus-fill text-white fs-5"></i>
+        </div>
+        <h4 class="fw-800 mb-1" style="letter-spacing:-.02em;">Створити акаунт</h4>
+        <p class="text-muted" style="font-size:.875rem;">Приєднуйся до SolarPath</p>
+      </div>
+      @if (!ViewData.ModelState.IsValid) {
+        <div class="alert alert-danger mb-3">
+          @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors)) { <div>@e.ErrorMessage</div> }
+        </div>
+      }
+      <form asp-action="Register" method="post">
+        @Html.AntiForgeryToken()
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label fw-600" style="font-size:.875rem;">Ім'я</label>
+            <input type="text" name="firstName" class="form-control" placeholder="Іван" required/>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-600" style="font-size:.875rem;">Прізвище</label>
+            <input type="text" name="lastName" class="form-control" placeholder="Білокінь" required/>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-600" style="font-size:.875rem;">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="you@example.com" required/>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-600" style="font-size:.875rem;">Пароль <span style="color:#9ca3af;font-weight:400;">(мін. 6 символів)</span></label>
+          <input type="password" name="password" class="form-control" placeholder="••••••" required minlength="6"/>
+        </div>
+        <button type="submit" class="btn btn-success w-100 py-2 mb-4" style="font-size:.9375rem;">Зареєструватись</button>
+        <p class="text-center mb-0" style="font-size:.875rem;color:#6b7280;">
+          Вже маєш акаунт? <a asp-action="Login" class="fw-600">Увійти</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

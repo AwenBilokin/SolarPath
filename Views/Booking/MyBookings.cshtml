@@ -1,0 +1,80 @@
+@model IEnumerable<SolarPath.Web.Models.Booking>
+@{ViewData["Title"] = "Мої бронювання";}
+
+<div class="page-header mb-4">
+  <h1 class="page-title"><i class="bi bi-calendar-check-fill me-2"></i>Мої бронювання</h1>
+</div>
+
+@if (!Model.Any()) {
+  <div class="empty-state">
+    <i class="bi bi-calendar-x"></i>
+    <h5>Бронювань ще немає</h5>
+    <p>Знайди цікавий маршрут і забронюй своє місце!</p>
+    <a asp-controller="Routes" asp-action="Index" class="btn btn-success">
+      <i class="bi bi-signpost-2 me-2"></i>Переглянути маршрути
+    </a>
+  </div>
+} else {
+  <div class="sp-table">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Маршрут</th>
+          <th>Дата</th>
+          <th>Осіб</th>
+          <th>Сума</th>
+          <th>Статус</th>
+          <th>Транзакція</th>
+          <th>Дія</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var b in Model) {
+          <tr>
+            <td>
+              <a asp-controller="Routes" asp-action="Details" asp-route-id="@b.RouteId"
+                 class="fw-600 text-decoration-none">@b.Route?.Title</a>
+            </td>
+            <td>@b.ScheduledDate.ToString("dd.MM.yyyy")</td>
+            <td>@b.ParticipantsCount</td>
+            <td class="fw-600">@b.TotalPrice ₴</td>
+            <td>@BookingBadge(b.BookingStatus)</td>
+            <td>
+              <span class="font-monospace" style="font-size:.78rem;color:#6b7280;">
+                @(b.Payment?.GatewayTransactionId ?? "—")
+              </span>
+            </td>
+            <td>
+              @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.Pending ||
+                   b.BookingStatus == SolarPath.Web.Models.BookingStatus.Paid ||
+                   b.BookingStatus == SolarPath.Web.Models.BookingStatus.Confirmed) {
+                <form asp-action="Cancel" method="post" asp-route-id="@b.Id">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('Скасувати бронювання?')">
+                    <i class="bi bi-x-circle me-1"></i>Скасувати
+                  </button>
+                </form>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+@functions {
+  Microsoft.AspNetCore.Html.IHtmlContent BookingBadge(SolarPath.Web.Models.BookingStatus s) {
+    var (cls, label) = s switch {
+      SolarPath.Web.Models.BookingStatus.Paid            => ("bg-success",   "Оплачено"),
+      SolarPath.Web.Models.BookingStatus.Confirmed       => ("bg-primary",   "Підтверджено"),
+      SolarPath.Web.Models.BookingStatus.Completed       => ("bg-secondary", "Завершено"),
+      SolarPath.Web.Models.BookingStatus.Cancelled       => ("bg-danger",    "Скасовано"),
+      SolarPath.Web.Models.BookingStatus.CancelledByGuide=> ("bg-danger",    "Відхилено"),
+      SolarPath.Web.Models.BookingStatus.Pending         => ("bg-warning text-dark", "Очікується"),
+      _                                                  => ("bg-secondary", s.ToString())
+    };
+    return new Microsoft.AspNetCore.Html.HtmlString($"<span class='badge {cls}'>{label}</span>");
+  }
+}

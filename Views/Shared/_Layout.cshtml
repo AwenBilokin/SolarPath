@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>@(ViewData["Title"] != null ? ViewData["Title"] + " · SolarPath" : "SolarPath")</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="~/css/site.css"/>
+</head>
+<body>
+
+<nav class="sp-navbar navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index">
+      <span class="brand-icon"><i class="bi bi-sun-fill"></i></span>
+      SolarPath
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false">
+      <i class="bi bi-list" style="color:#fff;font-size:1.4rem;"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto gap-1 mt-2 mt-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Routes" asp-action="Index">
+            <i class="bi bi-signpost-2 me-1"></i>Маршрути
+          </a>
+        </li>
+        @if (User.IsInRole("Guide")) {
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Guide" asp-action="Dashboard">
+              <i class="bi bi-compass me-1"></i>Кабінет гіда
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Routes" asp-action="Create">
+              <i class="bi bi-plus-circle me-1"></i>Новий маршрут
+            </a>
+          </li>
+        }
+        @if (User.IsInRole("Tourist")) {
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Booking" asp-action="MyBookings">
+              <i class="bi bi-calendar-check me-1"></i>Бронювання
+            </a>
+          </li>
+        }
+        @if (User.IsInRole("Administrator")) {
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Admin" asp-action="Index">
+              <i class="bi bi-shield-check me-1"></i>Адмін
+            </a>
+          </li>
+        }
+      </ul>
+      <ul class="navbar-nav align-items-lg-center gap-2 mt-2 mt-lg-0">
+        @if (User.Identity?.IsAuthenticated == true) {
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="nav-avatar"><i class="bi bi-person-fill"></i></span>
+              <span class="nav-username">@User.Identity.Name</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="dropdown-item">
+                    <i class="bi bi-box-arrow-right me-2 text-danger"></i>Вийти
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        } else {
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Login">Увійти</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn-nav-cta" asp-controller="Account" asp-action="Register">Реєстрація</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  @if (TempData["Success"] != null) {
+    <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  }
+  @if (TempData["Error"] != null) {
+    <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  }
+  @RenderBody()
+</main>
+
+<footer class="sp-footer">
+  <div class="container text-center">
+    <i class="bi bi-sun-fill me-1" style="color:#4ade80;"></i>
+    <strong style="color:rgba(255,255,255,.6);">SolarPath</strong>
+    <span style="color:rgba(255,255,255,.25);margin:0 8px;">·</span>
+    <span>&copy; @DateTime.Now.Year</span>
+    <span style="color:rgba(255,255,255,.25);margin:0 8px;">·</span>
+    <span>Туристичні маршрути України</span>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

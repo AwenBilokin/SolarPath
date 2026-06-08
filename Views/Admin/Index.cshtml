@@ -1,0 +1,39 @@
+@{ViewData["Title"] = "Адмін-панель";}
+
+<div class="section-title mb-1">Адміністрування</div>
+<div class="section-sub">Загальна статистика системи SolarPath</div>
+
+<div class="row g-4 mb-5">
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="bi bi-signpost-2-fill"></i></div>
+      <div class="stat-value">@ViewBag.RoutesCount</div>
+      <div class="stat-label">Маршрутів</div>
+      <a asp-action="Routes" class="btn btn-sm mt-3 w-100" style="background:#f0fdf4;color:#16a34a;border-radius:8px;font-weight:600;font-size:.8rem;">Переглянути →</a>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="bi bi-calendar-check-fill"></i></div>
+      <div class="stat-value">@ViewBag.BookingsCount</div>
+      <div class="stat-label">Бронювань</div>
+      <a asp-action="Bookings" class="btn btn-sm mt-3 w-100" style="background:#eff6ff;color:#1d4ed8;border-radius:8px;font-weight:600;font-size:.8rem;">Переглянути →</a>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f3e8ff;color:#7c3aed;"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-value">@ViewBag.UsersCount</div>
+      <div class="stat-label">Користувачів</div>
+      <a asp-action="Users" class="btn btn-sm mt-3 w-100" style="background:#faf5ff;color:#7c3aed;border-radius:8px;font-weight:600;font-size:.8rem;">Переглянути →</a>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fef9c3;color:#a16207;"><i class="bi bi-cash-stack"></i></div>
+      <div class="stat-value">@ViewBag.TotalRevenue.ToString("N0")</div>
+      <div class="stat-label">Дохід, ₴</div>
+      <a asp-action="Bookings" class="btn btn-sm mt-3 w-100" style="background:#fefce8;color:#a16207;border-radius:8px;font-weight:600;font-size:.8rem;">Деталі →</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,177 @@
+@model SolarPath.Web.Models.Route
+@{ViewData["Title"] = Model.Title;}
+
+<div class="row g-4">
+
+  
+  <div class="col-lg-8">
+
+    
+    @if (!string.IsNullOrEmpty(Model.ImageUrl)) {
+      <div class="detail-hero mb-4">
+        <img src="@Model.ImageUrl" alt="@Model.Title"/>
+        <span class="badge-difficulty badge-@Model.Difficulty.ToString().ToLower() detail-badge">@Model.Difficulty</span>
+      </div>
+    }
+
+    <h1 class="detail-title">@Model.Title</h1>
+
+    
+    <div class="detail-stats mb-4">
+      <div class="detail-stat">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>@Model.DistanceKm км</span>
+      </div>
+      <div class="detail-stat">
+        <i class="bi bi-clock-fill"></i>
+        <span>@(Model.DurationMinutes / 60)г @(Model.DurationMinutes % 60)хв</span>
+      </div>
+      <div class="detail-stat">
+        <i class="bi bi-people-fill"></i>
+        <span>до @Model.MaxParticipants осіб</span>
+      </div>
+      <div class="detail-stat">
+        <i class="bi bi-tag-fill"></i>
+        <span>@Model.Category?.Name</span>
+      </div>
+    </div>
+
+    <p class="detail-desc">@Model.Description</p>
+
+    
+    <div id="route-map" class="mb-4"></div>
+
+    
+    <h5 class="section-heading">Характеристики</h5>
+    <div class="sp-table mb-4">
+      <table class="table mb-0">
+        <tbody>
+          <tr><th style="width:40%">Категорія</th><td>@Model.Category?.Name</td></tr>
+          <tr><th>Відстань</th><td>@Model.DistanceKm км</td></tr>
+          <tr><th>Тривалість</th><td>@(Model.DurationMinutes / 60)г @(Model.DurationMinutes % 60)хв</td></tr>
+          <tr><th>Макс. учасників</th><td>@Model.MaxParticipants</td></tr>
+          <tr><th>Вільних місць</th><td>
+            <span class="@(Model.AvailableSlots > 0 ? "text-success fw-600" : "text-danger fw-600")">
+              @Model.AvailableSlots
+            </span>
+          </td></tr>
+          <tr><th>Ціна/особу</th><td class="fw-700 text-sp">@Model.PricePerPerson ₴</td></tr>
+          <tr><th>Гід</th><td>@Model.Guide?.FullName</td></tr>
+          @if (Model.SeasonStart.HasValue) {
+            <tr><th>Сезон</th><td>@Model.SeasonStart.Value.ToString("dd.MM") — @Model.SeasonEnd?.ToString("dd.MM")</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    
+    <h5 class="section-heading">Відгуки</h5>
+    @if (!Model.Reviews.Any()) {
+      <p class="text-muted">Відгуків поки немає.</p>
+    } else {
+      @foreach (var rv in Model.Reviews.OrderByDescending(r => r.CreatedAt)) {
+        <div class="review-card mb-3">
+          <div class="review-header">
+            <strong>@rv.Tourist?.FullName</strong>
+            <span class="review-date">@rv.CreatedAt.ToString("dd.MM.yyyy")</span>
+          </div>
+          <div class="stars mb-1">
+            @for (int i = 1; i <= 5; i++) {
+              <i class="bi @(i <= rv.Rating ? "bi-star-fill" : "bi-star")"></i>
+            }
+          </div>
+          @if (!string.IsNullOrEmpty(rv.Text)) {
+            <p class="mb-0 mt-1" style="font-size:.9rem;color:#374151;">@rv.Text</p>
+          }
+        </div>
+      }
+    }
+  </div>
+
+  
+  <div class="col-lg-4">
+    <div class="booking-card">
+      <div class="booking-price">
+        @Model.PricePerPerson ₴ <span>/особу</span>
+      </div>
+
+      @if (Model.Reviews.Any()) {
+        <div class="stars my-2">
+          @for (int i = 1; i <= 5; i++) {
+            <i class="bi @(i <= Math.Round(Model.AverageRating) ? "bi-star-fill" : "bi-star")"></i>
+          }
+          <span style="font-size:.8rem;color:#6b7280;margin-left:6px;">@Model.AverageRating.ToString("F1") · @Model.Reviews.Count відгуків</span>
+        </div>
+      }
+
+      <hr style="border-color:#f0f4f1;margin:16px 0;"/>
+
+      @if (User.IsInRole("Tourist")) {
+        <form asp-controller="Payment" asp-action="Checkout" method="post">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="routeId" value="@Model.Id"/>
+          <div class="mb-3">
+            <label class="form-label">Дата походу</label>
+            <input type="date" name="scheduledDate" class="form-control"
+                   required min="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Кількість осіб</label>
+            <input type="number" name="participantsCount" class="form-control"
+                   min="1" max="@Model.AvailableSlots" value="1" required/>
+          </div>
+          <div class="availability-note mb-3">
+            <i class="bi bi-people me-1"></i>
+            Вільних місць: <strong>@Model.AvailableSlots</strong>
+          </div>
+          <button type="submit" class="btn-book">
+            <i class="bi bi-credit-card-fill me-2"></i>Забронювати та оплатити
+          </button>
+        </form>
+      } else if (!User.Identity!.IsAuthenticated) {
+        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary w-100">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Увійдіть для бронювання
+        </a>
+      } else {
+        <div class="alert alert-info mb-0" style="font-size:.875rem;">
+          <i class="bi bi-info-circle me-1"></i>Бронювання доступне лише для туристів.
+        </div>
+      }
+
+      <div class="booking-perks mt-3">
+        <div><i class="bi bi-shield-check text-success me-2"></i>Безпечна оплата Stripe</div>
+        <div><i class="bi bi-arrow-counterclockwise text-success me-2"></i>Скасування до дати походу</div>
+        <div><i class="bi bi-headset text-success me-2"></i>Підтримка гіда</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+@section Scripts {
+<script>
+var map = L.map('route-map').setView([48.5, 31.2], 6);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {attribution:'© OpenStreetMap'}).addTo(map);
+
+var points = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+  Model.Points.OrderBy(p => p.OrderIndex)
+    .Select(p => new { p.Latitude, p.Longitude, p.Title, Type = p.PointType.ToString() })));
+
+if (points.length > 0) {
+  var latlngs = points.map(p => [p.Latitude, p.Longitude]);
+  L.polyline(latlngs, {color:'#16a34a', weight:4, opacity:.85}).addTo(map);
+  points.forEach(p => {
+    var color = p.Type==='Start' ? '#16a34a' : p.Type==='Finish' ? '#dc2626' : '#2563eb';
+    var icon = L.divIcon({
+      html: '<div style="width:12px;height:12px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);"></div>',
+      iconSize:[12,12], iconAnchor:[6,6], className:''
+    });
+    L.marker([p.Latitude, p.Longitude], {icon})
+     .bindPopup('<strong>'+p.Title+'</strong><br><small>'+p.Type+'</small>')
+     .addTo(map);
+  });
+  map.fitBounds(latlngs, {padding:[30,30]});
+}
+</script>
+}

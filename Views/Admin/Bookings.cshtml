@@ -1,0 +1,52 @@
+@model IEnumerable<SolarPath.Web.Models.Booking>
+@{ViewData["Title"] = "Всі бронювання";}
+
+<div class="page-header mb-4">
+  <h1 class="page-title"><i class="bi bi-calendar-check-fill me-2"></i>Всі бронювання</h1>
+</div>
+
+<div class="sp-table">
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Маршрут</th>
+        <th>Турист</th>
+        <th>Дата</th>
+        <th>Сума</th>
+        <th>Статус</th>
+        <th>Транзакція</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var b in Model) {
+        <tr>
+          <td class="text-muted" style="font-size:.8rem;">@b.Id</td>
+          <td class="fw-600">@b.Route?.Title</td>
+          <td>@b.Tourist?.FullName</td>
+          <td>@b.ScheduledDate.ToString("dd.MM.yyyy")</td>
+          <td class="fw-600">@b.TotalPrice ₴</td>
+          <td>
+            @{
+              var (cls, label) = b.BookingStatus switch {
+                SolarPath.Web.Models.BookingStatus.Paid             => ("bg-success",   "Оплачено"),
+                SolarPath.Web.Models.BookingStatus.Confirmed        => ("bg-primary",   "Підтверджено"),
+                SolarPath.Web.Models.BookingStatus.Completed        => ("bg-secondary", "Завершено"),
+                SolarPath.Web.Models.BookingStatus.Cancelled        => ("bg-danger",    "Скасовано"),
+                SolarPath.Web.Models.BookingStatus.CancelledByGuide => ("bg-danger",    "Відхилено"),
+                SolarPath.Web.Models.BookingStatus.Pending          => ("bg-warning text-dark", "Очікується"),
+                _ => ("bg-secondary", b.BookingStatus.ToString())
+              };
+            }
+            <span class="badge @cls">@label</span>
+          </td>
+          <td>
+            <span class="font-monospace" style="font-size:.78rem;color:#6b7280;">
+              @(b.Payment?.GatewayTransactionId ?? "—")
+            </span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
