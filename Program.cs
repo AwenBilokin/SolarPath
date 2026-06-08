@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using SolarPath.Web.Data;
 using SolarPath.Web.Models;
@@ -24,6 +25,14 @@ builder.Services.AddScoped<IRouteService,   RouteService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 
+// Для Railway — forwarded headers щоб HTTPS працював правильно
+builder.Services.Configure<ForwardedHeadersOptions>(opts =>
+{
+    opts.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    opts.KnownNetworks.Clear();
+    opts.KnownProxies.Clear();
+});
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -31,9 +40,9 @@ var app = builder.Build();
 // Migrate + Seed
 using (var scope = app.Services.CreateScope())
 {
-    var db   = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var rm   = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var um   = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var rm = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var um = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     await db.Database.MigrateAsync();
 
     foreach (var role in new[] { "Administrator", "Guide", "Tourist" })
@@ -51,13 +60,15 @@ using (var scope = app.Services.CreateScope())
     await SeedData.SeedRoutesAsync(scope.ServiceProvider);
 }
 
+// Forwarded headers ПЕРЕД усім іншим
+app.UseForwardedHeaders();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Прибрали UseHttpsRedirection — Railway сам обробляє SSL
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
