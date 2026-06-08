@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
+using Npgsql;
 using Microsoft.EntityFrameworkCore;
 using SolarPath.Web.Data;
 using SolarPath.Web.Models;
 using SolarPath.Web.Services;
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 var builder = WebApplication.CreateBuilder(args);
 

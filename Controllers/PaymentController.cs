@@ -53,7 +53,7 @@ public class PaymentController : Controller
             // Перевірка місць
             var booked = await _db.Bookings
                 .Where(b => b.RouteId == routeId
-                         && b.ScheduledDate.Date == parsedDate.Date
+                         && b.ScheduledDate.Date == DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc).Date
                          && b.BookingStatus != BookingStatus.Cancelled
                          && b.BookingStatus != BookingStatus.CancelledByGuide)
                 .SumAsync(b => (int?)b.ParticipantsCount) ?? 0;
@@ -72,7 +72,7 @@ public class PaymentController : Controller
             {
                 RouteId           = routeId,
                 TouristId         = userId,
-                ScheduledDate     = parsedDate,
+                ScheduledDate     = DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc),
                 ParticipantsCount = participantsCount,
                 TotalPrice        = totalPrice,
                 BookingStatus     = BookingStatus.Pending
