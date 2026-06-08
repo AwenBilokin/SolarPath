@@ -29,7 +29,7 @@ public class PaymentController : Controller
         try
         {
             // Парсимо дату безпечно
-            if (!DateTime.TryParse(scheduledDate, out var parsedDate))
+            if (!DateTime.TryParse(scheduledDate, null, System.Globalization.DateTimeStyles.None, out var parsedDate))
             {
                 TempData["Error"] = "Невірний формат дати. Спробуйте ще раз.";
                 return RedirectToAction("Details", "Routes", new { id = routeId });
@@ -51,14 +51,18 @@ public class PaymentController : Controller
             }
 
             // Перевірка місць
+            // Порівнюємо дати як рядки щоб уникнути DateTime Kind проблеми з PostgreSQL
+            var dateOnly = parsedDate.ToString("yyyy-MM-dd");
             var booked = await _db.Bookings
                 .Where(b => b.RouteId == routeId
-                         && b.ScheduledDate.Date == DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc).Date
                          && b.BookingStatus != BookingStatus.Cancelled
                          && b.BookingStatus != BookingStatus.CancelledByGuide)
-                .SumAsync(b => (int?)b.ParticipantsCount) ?? 0;
+                .ToListAsync();
+            var bookedCount = booked
+                .Where(b => b.ScheduledDate.ToString("yyyy-MM-dd") == dateOnly)
+                .Sum(b => b.ParticipantsCount);
 
-            if (booked + participantsCount > route.MaxParticipants)
+            if (bookedCount + participantsCount > route.MaxParticipants)
             {
                 TempData["Error"] = "На жаль, на обрану дату немає вільних місць.";
                 return RedirectToAction("Details", "Routes", new { id = routeId });
