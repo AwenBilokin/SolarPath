@@ -33,8 +33,40 @@ public class AdminController : Controller
     public async Task<IActionResult> DeleteRoute(int id)
     {
         var route = await _db.Routes.FindAsync(id);
-        if (route != null) { _db.Routes.Remove(route); await _db.SaveChangesAsync(); }
-        TempData["Success"] = "Маршрут видалено.";
+        if (route == null)
+        {
+            TempData["Error"] = "Маршрут не знайдено.";
+            return RedirectToAction(nameof(Routes));
+        }
+
+        // Перевіряємо активні бронювання
+        var activeBookings = await _db.Bookings
+            .Where(b => b.RouteId == id &&
+                   b.BookingStatus != BookingStatus.Cancelled &&
+                   b.BookingStatus != BookingStatus.CancelledByGuide &&
+                   b.BookingStatus != BookingStatus.Refunded)
+            .CountAsync();
+
+        if (activeBookings > 0)
+        {
+            TempData["Error"] = $"Неможливо видалити маршрут — є {activeBookings} активних бронювань. Спочатку скасуйте всі бронювання.";
+            return RedirectToAction(nameof(Routes));
+        }
+
+        // Архівуємо замість фізичного видалення якщо є скасовані бронювання
+        var hasAnyBookings = await _db.Bookings.AnyAsync(b => b.RouteId == id);
+        if (hasAnyBookings)
+        {
+            route.RouteStatus = RouteStatus.Archived;
+            TempData["Success"] = "Маршрут переведено в архів (є скасовані бронювання в історії).";
+        }
+        else
+        {
+            _db.Routes.Remove(route);
+            TempData["Success"] = "Маршрут видалено.";
+        }
+
+        await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Routes));
     }
 
