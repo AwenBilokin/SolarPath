@@ -40,16 +40,43 @@ public static class SeedData
 
         // Точки маршруту Говерла
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r1.Id, Title="Старт — с. Лазещина",    Latitude=48.1580, Longitude=24.4970, PointType=PointType.Start,      OrderIndex=0 },
-            new RoutePoint { RouteId=r1.Id, Title="Альпійські луки",         Latitude=48.1750, Longitude=24.5080, PointType=PointType.Highlight,  OrderIndex=1 },
-            new RoutePoint { RouteId=r1.Id, Title="Вершина Говерла 2061м",   Latitude=48.1622, Longitude=24.5007, PointType=PointType.Finish,     OrderIndex=2 }
+            new RoutePoint { RouteId=r1.Id, Title="Старт — с. Лазещина",    Latitude=48.2102, Longitude=24.3856, PointType=PointType.Start,      OrderIndex=0 },
+            new RoutePoint { RouteId=r1.Id, Title="Кордон заповідника",      Latitude=48.1980, Longitude=24.4210, PointType=PointType.Checkpoint, OrderIndex=1 },
+            new RoutePoint { RouteId=r1.Id, Title="Альпійські луки",         Latitude=48.1820, Longitude=24.4580, PointType=PointType.Highlight,  OrderIndex=2 },
+            new RoutePoint { RouteId=r1.Id, Title="Вершина Говерла 2061м",   Latitude=48.1622, Longitude=24.5007, PointType=PointType.Finish,     OrderIndex=3 }
         );
 
         // Точки маршруту Дністер
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r3.Id, Title="Старт — Заліщики",       Latitude=48.6380, Longitude=25.7310, PointType=PointType.Start,      OrderIndex=0 },
-            new RoutePoint { RouteId=r3.Id, Title="Скеля Дівич-гора",        Latitude=48.6450, Longitude=25.7600, PointType=PointType.Highlight,  OrderIndex=1 },
-            new RoutePoint { RouteId=r3.Id, Title="Фініш — Городок",         Latitude=48.6520, Longitude=25.7900, PointType=PointType.Finish,     OrderIndex=2 }
+            new RoutePoint { RouteId=r3.Id, Title="Старт — Заліщики",       Latitude=48.6377, Longitude=25.7268, PointType=PointType.Start,      OrderIndex=0 },
+            new RoutePoint { RouteId=r3.Id, Title="Скеля Дівич-гора",        Latitude=48.6290, Longitude=25.7580, PointType=PointType.Highlight,  OrderIndex=1 },
+            new RoutePoint { RouteId=r3.Id, Title="Вигин Дністра",           Latitude=48.6180, Longitude=25.7820, PointType=PointType.Checkpoint, OrderIndex=2 },
+            new RoutePoint { RouteId=r3.Id, Title="Фініш — Нирків",          Latitude=48.6050, Longitude=25.8150, PointType=PointType.Finish,     OrderIndex=3 }
+        );
+
+        // Точки для Софіївського парку (Умань)
+        db.RoutePoints.AddRange(
+            new RoutePoint { RouteId=r2.Id, Title="Вхід до парку",    Latitude=48.7538, Longitude=30.2246, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r2.Id, Title="Острів Анти-Цирці",Latitude=48.7558, Longitude=30.2198, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r2.Id, Title="Великий каскад",   Latitude=48.7545, Longitude=30.2230, PointType=PointType.Finish,    OrderIndex=2 }
+        );
+        // Точки для Велотуру Закарпаттям
+        db.RoutePoints.AddRange(
+            new RoutePoint { RouteId=r4.Id, Title="Старт — Берегово", Latitude=48.2042, Longitude=22.6411, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r4.Id, Title="Замок Мукачево",   Latitude=48.4412, Longitude=22.7163, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r4.Id, Title="Фініш — Ужгород",  Latitude=48.6239, Longitude=22.2983, PointType=PointType.Finish,    OrderIndex=2 }
+        );
+        // Точки для Шляху Довбуша
+        db.RoutePoints.AddRange(
+            new RoutePoint { RouteId=r5.Id, Title="Старт — Яремче",  Latitude=48.4568, Longitude=24.5536, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r5.Id, Title="Скелі Довбуша",   Latitude=48.7220, Longitude=24.0890, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r5.Id, Title="Фініш — Бубнище", Latitude=48.7260, Longitude=24.0930, PointType=PointType.Finish,    OrderIndex=2 }
+        );
+        // Точки для Кам'янець-Подільського
+        db.RoutePoints.AddRange(
+            new RoutePoint { RouteId=r6.Id, Title="Вхідні ворота",   Latitude=48.6714, Longitude=26.5631, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r6.Id, Title="Стара фортеця",   Latitude=48.6712, Longitude=26.5628, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r6.Id, Title="Старе місто",     Latitude=48.6730, Longitude=26.5590, PointType=PointType.Finish,    OrderIndex=2 }
         );
 
         await db.SaveChangesAsync();
