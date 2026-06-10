@@ -28,7 +28,7 @@ public class GuideController : Controller
     public async Task<IActionResult> Confirm(int id)
     {
         await _bookingService.ConfirmBookingAsync(id);
-        TempData["Success"] = "Бронювання підтверджено.";
+        TempData["Success"] = "Бронювання підтверджено — турист отримає сповіщення.";
         return RedirectToAction(nameof(Dashboard));
     }
 
@@ -37,6 +37,22 @@ public class GuideController : Controller
     {
         await _bookingService.CancelBookingAsync(id);
         TempData["Success"] = "Бронювання відхилено.";
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Start(int id)
+    {
+        await _bookingService.StartBookingAsync(id);
+        TempData["Success"] = "Похід розпочато!";
+        return RedirectToAction(nameof(Dashboard));
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> Complete(int id)
+    {
+        await _bookingService.CompleteBookingAsync(id);
+        TempData["Success"] = "Похід завершено. Туристу надіслано запрошення залишити відгук.";
         return RedirectToAction(nameof(Dashboard));
     }
 

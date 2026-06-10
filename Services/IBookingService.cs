@@ -8,6 +8,10 @@ public interface IBookingService
     Task<Booking> CreateBookingAsync(int routeId, string touristId, DateTime date, int participants);
     Task ConfirmBookingAsync(int bookingId);
     Task CancelBookingAsync(int bookingId);
+    Task CompleteBookingAsync(int bookingId);
+    Task StartBookingAsync(int bookingId);
+    Task RequestRefundAsync(int bookingId);
+    Task ProcessRefundAsync(int bookingId);
     Task<IEnumerable<Booking>> GetByTouristAsync(string touristId);
     Task<IEnumerable<Booking>> GetByGuideAsync(string guideId);
 }

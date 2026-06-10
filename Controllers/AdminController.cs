@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SolarPath.Web.Data;
 using SolarPath.Web.Models;
+using SolarPath.Web.Services;
 
 namespace SolarPath.Web.Controllers;
 
@@ -13,16 +14,26 @@ public class AdminController : Controller
     private readonly ApplicationDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IBookingService _bookingService;
 
-    public AdminController(ApplicationDbContext db, UserManager<ApplicationUser> um, RoleManager<IdentityRole> rm)
-    { _db = db; _userManager = um; _roleManager = rm; }
+    public AdminController(ApplicationDbContext db, UserManager<ApplicationUser> um,
+        RoleManager<IdentityRole> rm, IBookingService bs)
+    { _db = db; _userManager = um; _roleManager = rm; _bookingService = bs; }
 
     public async Task<IActionResult> Index()
     {
         ViewBag.RoutesCount   = await _db.Routes.CountAsync();
         ViewBag.BookingsCount = await _db.Bookings.CountAsync();
         ViewBag.UsersCount    = await _db.Users.CountAsync();
-        ViewBag.TotalRevenue = await _db.Payments.Include(p => p.Booking).Where(p => p.Booking.BookingStatus != BookingStatus.Cancelled && p.Booking.BookingStatus != BookingStatus.CancelledByGuide && p.Booking.BookingStatus != BookingStatus.Refunded && p.RefundedAt == null).SumAsync(p => (decimal?)p.Amount) ?? 0;
+        ViewBag.TotalRevenue  = await _db.Payments
+            .Include(p => p.Booking)
+            .Where(p => p.Booking.BookingStatus != BookingStatus.Cancelled
+                     && p.Booking.BookingStatus != BookingStatus.CancelledByGuide
+                     && p.Booking.BookingStatus != BookingStatus.Refunded
+                     && p.RefundedAt == null)
+            .SumAsync(p => (decimal?)p.Amount) ?? 0;
+        ViewBag.ActiveRoutes  = await _db.Routes.CountAsync(r => r.RouteStatus == RouteStatus.Published);
+        ViewBag.PendingRefunds = await _db.Bookings.CountAsync(b => b.BookingStatus == BookingStatus.RefundRequested);
         return View();
     }
 
@@ -39,26 +50,24 @@ public class AdminController : Controller
             return RedirectToAction(nameof(Routes));
         }
 
-        // Перевіряємо активні бронювання
         var activeBookings = await _db.Bookings
-            .Where(b => b.RouteId == id &&
-                   b.BookingStatus != BookingStatus.Cancelled &&
-                   b.BookingStatus != BookingStatus.CancelledByGuide &&
-                   b.BookingStatus != BookingStatus.Refunded)
+            .Where(b => b.RouteId == id
+                     && b.BookingStatus != BookingStatus.Cancelled
+                     && b.BookingStatus != BookingStatus.CancelledByGuide
+                     && b.BookingStatus != BookingStatus.Refunded)
             .CountAsync();
 
         if (activeBookings > 0)
         {
-            TempData["Error"] = $"Неможливо видалити маршрут — є {activeBookings} активних бронювань. Спочатку скасуйте всі бронювання.";
+            TempData["Error"] = $"Неможливо видалити маршрут — є {activeBookings} активних бронювань. Спочатку скасуйте їх.";
             return RedirectToAction(nameof(Routes));
         }
 
-        // Архівуємо замість фізичного видалення якщо є скасовані бронювання
         var hasAnyBookings = await _db.Bookings.AnyAsync(b => b.RouteId == id);
         if (hasAnyBookings)
         {
             route.RouteStatus = RouteStatus.Archived;
-            TempData["Success"] = "Маршрут переведено в архів (є скасовані бронювання в історії).";
+            TempData["Success"] = "Маршрут переведено в архів (є історія бронювань).";
         }
         else
         {
@@ -71,7 +80,20 @@ public class AdminController : Controller
     }
 
     public async Task<IActionResult> Bookings() =>
-        View(await _db.Bookings.Include(b => b.Route).Include(b => b.Tourist).Include(b => b.Payment).ToListAsync());
+        View(await _db.Bookings
+            .Include(b => b.Route)
+            .Include(b => b.Tourist)
+            .Include(b => b.Payment)
+            .OrderByDescending(b => b.CreatedAt)
+            .ToListAsync());
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProcessRefund(int id)
+    {
+        await _bookingService.ProcessRefundAsync(id);
+        TempData["Success"] = "Повернення коштів оброблено.";
+        return RedirectToAction(nameof(Bookings));
+    }
 
     public async Task<IActionResult> Users()
     {
@@ -91,7 +113,7 @@ public class AdminController : Controller
             var currentRoles = await _userManager.GetRolesAsync(user);
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
             await _userManager.AddToRoleAsync(user, role);
-            TempData["Success"] = $"Роль користувача змінено на {role}.";
+            TempData["Success"] = $"Роль змінено на {role}.";
         }
         return RedirectToAction(nameof(Users));
     }

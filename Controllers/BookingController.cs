@@ -24,25 +24,18 @@ public class BookingController : Controller
     }
 
     [HttpPost, Authorize(Roles = "Tourist"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(int routeId, DateTime scheduledDate, int participantsCount)
-    {
-        var available = await _bookingService.CheckAvailabilityAsync(routeId, scheduledDate, participantsCount);
-        if (!available)
-        {
-            TempData["Error"] = "На жаль, на обрану дату немає вільних місць.";
-            return RedirectToAction("Details", "Routes", new { id = routeId });
-        }
-        var userId = _userManager.GetUserId(User)!;
-        await _bookingService.CreateBookingAsync(routeId, userId, scheduledDate, participantsCount);
-        TempData["Success"] = "Бронювання успішно оформлено та оплачено!";
-        return RedirectToAction(nameof(MyBookings));
-    }
-
-    [HttpPost, Authorize(Roles = "Tourist"), ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel(int id)
     {
         await _bookingService.CancelBookingAsync(id);
         TempData["Success"] = "Бронювання скасовано.";
+        return RedirectToAction(nameof(MyBookings));
+    }
+
+    [HttpPost, Authorize(Roles = "Tourist"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestRefund(int id)
+    {
+        await _bookingService.RequestRefundAsync(id);
+        TempData["Success"] = "Запит на повернення коштів надіслано адміністратору.";
         return RedirectToAction(nameof(MyBookings));
     }
 }

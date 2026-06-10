@@ -1,26 +1,26 @@
 @using SolarPath.Web.Models
 @{ViewData["Title"] = "Кабінет гіда";}
 
-<div class="page-header mb-4">
+<div class="page-header">
   <h1 class="page-title"><i class="bi bi-compass-fill me-2"></i>Кабінет гіда</h1>
+  <a asp-controller="Routes" asp-action="Create" class="btn btn-success btn-sm">
+    <i class="bi bi-plus-lg me-1"></i>Новий маршрут
+  </a>
 </div>
 
 <h5 class="section-heading">Мої маршрути</h5>
 <div class="sp-table mb-5">
   <table class="table table-hover mb-0">
     <thead>
-      <tr>
-        <th>Назва</th>
-        <th>Статус</th>
-        <th>Ціна</th>
-        <th>Бронювань</th>
-        <th>Дії</th>
-      </tr>
+      <tr><th>Назва</th><th>Статус</th><th>Ціна</th><th>Бронювань</th><th>Дії</th></tr>
     </thead>
     <tbody>
       @foreach (var r in (IEnumerable<Route>)ViewBag.Routes) {
         <tr>
-          <td class="fw-600">@r.Title</td>
+          <td class="fw-600">
+            <a asp-controller="Routes" asp-action="Details" asp-route-id="@r.Id"
+               class="text-decoration-none">@r.Title</a>
+          </td>
           <td>
             @if (r.RouteStatus == RouteStatus.Published) {
               <span class="badge bg-success">Опублікований</span>
@@ -59,12 +59,8 @@
   <table class="table table-hover mb-0">
     <thead>
       <tr>
-        <th>Маршрут</th>
-        <th>Турист</th>
-        <th>Дата</th>
-        <th>Осіб</th>
-        <th>Статус</th>
-        <th>Дії</th>
+        <th>Маршрут</th><th>Турист</th><th>Дата</th>
+        <th>Осіб</th><th>Сума</th><th>Статус</th><th>Дії</th>
       </tr>
     </thead>
     <tbody>
@@ -74,20 +70,26 @@
           <td>@b.Tourist?.FullName</td>
           <td>@b.ScheduledDate.ToString("dd.MM.yyyy")</td>
           <td>@b.ParticipantsCount</td>
+          <td>@b.TotalPrice ₴</td>
           <td>
-            @if (b.BookingStatus == BookingStatus.Confirmed) {
-              <span class="badge bg-primary">Підтверджено</span>
-            } else if (b.BookingStatus == BookingStatus.Paid) {
-              <span class="badge bg-success">Оплачено</span>
-            } else if (b.BookingStatus == BookingStatus.Cancelled || b.BookingStatus == BookingStatus.CancelledByGuide) {
-              <span class="badge bg-danger">Скасовано</span>
-            } else {
-              <span class="badge bg-secondary">@b.BookingStatus</span>
+            @{
+              var (cls, label) = b.BookingStatus switch {
+                BookingStatus.Confirmed        => ("bg-primary",           "Підтверджено"),
+                BookingStatus.Paid             => ("bg-success",           "Оплачено"),
+                BookingStatus.InProgress       => ("bg-info",              "В процесі"),
+                BookingStatus.Completed        => ("bg-secondary",         "Завершено"),
+                BookingStatus.Cancelled        => ("bg-danger",            "Скасовано"),
+                BookingStatus.CancelledByGuide => ("bg-danger",            "Відхилено"),
+                BookingStatus.RefundRequested  => ("bg-warning text-dark", "Повернення"),
+                BookingStatus.Pending          => ("bg-warning text-dark", "Очікується"),
+                _ => ("bg-secondary", b.BookingStatus.ToString())
+              };
             }
+            <span class="badge @cls">@label</span>
           </td>
           <td>
-            @if (b.BookingStatus == BookingStatus.Paid) {
-              <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap">
+              @if (b.BookingStatus == BookingStatus.Paid) {
                 <form asp-controller="Guide" asp-action="Confirm" method="post" asp-route-id="@b.Id">
                   @Html.AntiForgeryToken()
                   <button class="btn btn-sm btn-success">
@@ -100,8 +102,24 @@
                     <i class="bi bi-x-lg me-1"></i>Відхилити
                   </button>
                 </form>
-              </div>
-            }
+              }
+              @if (b.BookingStatus == BookingStatus.Confirmed) {
+                <form asp-controller="Guide" asp-action="Start" method="post" asp-route-id="@b.Id">
+                  @Html.AntiForgeryToken()
+                  <button class="btn btn-sm btn-info text-white">
+                    <i class="bi bi-play-fill me-1"></i>Розпочати
+                  </button>
+                </form>
+              }
+              @if (b.BookingStatus == BookingStatus.InProgress) {
+                <form asp-controller="Guide" asp-action="Complete" method="post" asp-route-id="@b.Id">
+                  @Html.AntiForgeryToken()
+                  <button class="btn btn-sm btn-secondary">
+                    <i class="bi bi-flag-fill me-1"></i>Завершити
+                  </button>
+                </form>
+              }
+            </div>
           </td>
         </tr>
       }
