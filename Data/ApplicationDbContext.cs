@@ -51,6 +51,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.HasOne(r => r.Route).WithMany(r => r.Reviews).HasForeignKey(r => r.RouteId).OnDelete(DeleteBehavior.Cascade);
         });
 
+        // Індекси для оптимізації вибірок
+        builder.Entity<Models.Route>()
+            .HasIndex(r => r.RouteStatus)
+            .HasDatabaseName("IX_Routes_RouteStatus");
+        builder.Entity<Models.Route>()
+            .HasIndex(r => r.CategoryId)
+            .HasDatabaseName("IX_Routes_CategoryId");
+        builder.Entity<Booking>()
+            .HasIndex(b => b.TouristId)
+            .HasDatabaseName("IX_Bookings_TouristId");
+        builder.Entity<Booking>()
+            .HasIndex(b => b.BookingStatus)
+            .HasDatabaseName("IX_Bookings_BookingStatus");
+        builder.Entity<Review>()
+            .HasIndex(r => r.RouteId)
+            .HasDatabaseName("IX_Reviews_RouteId");
+
         // Seed categories
         builder.Entity<Category>().HasData(
             new Category { Id = 1, Name = "Пішохідні",   IconUrl = "bi-person-walking" },
