@@ -46,7 +46,6 @@ public class BookingService : IBookingService
         route.AvailableSlots = Math.Max(0, route.AvailableSlots - participants);
         await _db.SaveChangesAsync();
 
-        // Симуляція оплати (якщо Stripe не підключений)
         _db.Payments.Add(new Payment
         {
             BookingId            = booking.Id,
@@ -67,21 +66,31 @@ public class BookingService : IBookingService
     {
         var b = await _db.Bookings.FindAsync(bookingId);
         if (b == null) return;
-
         b.BookingStatus = BookingStatus.Confirmed;
         b.ConfirmedAt   = DateTime.UtcNow;
         await _db.SaveChangesAsync();
         await _notifications.NotifyBookingConfirmedAsync(bookingId);
     }
 
+    // ── скасування туристом ───────────────────────────────────────────────
+    // Якщо вже оплачено → одразу RefundRequested (не Cancelled)
+    // щоб адмін міг обробити повернення
     public async Task CancelBookingAsync(int bookingId)
     {
-        var b = await _db.Bookings.FindAsync(bookingId);
+        var b = await _db.Bookings
+            .Include(x => x.Payment)
+            .FirstOrDefaultAsync(x => x.Id == bookingId);
         if (b == null) return;
 
         var route = await _db.Routes.FindAsync(b.RouteId);
         if (route != null) route.AvailableSlots += b.ParticipantsCount;
-        b.BookingStatus = BookingStatus.Cancelled;
+
+        // Якщо є платіж — запит на повернення, якщо немає — просто скасування
+        if (b.Payment != null && b.Payment.RefundedAt == null)
+            b.BookingStatus = BookingStatus.RefundRequested;
+        else
+            b.BookingStatus = BookingStatus.Cancelled;
+
         await _db.SaveChangesAsync();
         await _notifications.NotifyBookingCancelledAsync(bookingId);
     }
@@ -90,12 +99,12 @@ public class BookingService : IBookingService
     {
         var b = await _db.Bookings.FindAsync(bookingId);
         if (b == null) return;
-
         b.BookingStatus = BookingStatus.Completed;
         await _db.SaveChangesAsync();
         await _notifications.NotifyBookingCompletedAsync(bookingId);
     }
 
+    // ── запит на повернення (окремий шлях: гід скасував) ─────────────────
     public async Task RequestRefundAsync(int bookingId)
     {
         var b = await _db.Bookings
@@ -103,10 +112,15 @@ public class BookingService : IBookingService
             .FirstOrDefaultAsync(x => x.Id == bookingId);
         if (b == null) return;
 
+        // Дозволяємо лише якщо скасовано гідом і ще не повернуто
+        if (b.BookingStatus != BookingStatus.CancelledByGuide) return;
+        if (b.Payment == null || b.Payment.RefundedAt != null) return;
+
         b.BookingStatus = BookingStatus.RefundRequested;
         await _db.SaveChangesAsync();
     }
 
+    // ── обробка повернення адміном ────────────────────────────────────────
     public async Task ProcessRefundAsync(int bookingId)
     {
         var b = await _db.Bookings
@@ -115,9 +129,12 @@ public class BookingService : IBookingService
             .FirstOrDefaultAsync(x => x.Id == bookingId);
         if (b == null) return;
 
+        // Приймаємо тільки RefundRequested
+        if (b.BookingStatus != BookingStatus.RefundRequested) return;
+
         b.BookingStatus = BookingStatus.Refunded;
         if (b.Payment != null) b.Payment.RefundedAt = DateTime.UtcNow;
-        if (b.Route != null) b.Route.AvailableSlots += b.ParticipantsCount;
+        // Слоти вже були повернуті при скасуванні — не дублюємо
         await _db.SaveChangesAsync();
         await _notifications.NotifyRefundProcessedAsync(bookingId);
     }

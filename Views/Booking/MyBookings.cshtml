@@ -61,15 +61,19 @@
                 @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.Pending ||
                      b.BookingStatus == SolarPath.Web.Models.BookingStatus.Paid ||
                      b.BookingStatus == SolarPath.Web.Models.BookingStatus.Confirmed) {
+                  var hasPayment = b.Payment != null;
+                  var confirmMsg = hasPayment
+                    ? "Скасувати бронювання? Оскільки ви вже оплатили — буде автоматично створено запит на повернення коштів адміністратору."
+                    : "Скасувати бронювання?";
                   <form asp-action="Cancel" method="post" asp-route-id="@b.Id">
                     @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-sm btn-outline-danger"
-                            onclick="return confirm('Скасувати бронювання?')">
+                            onclick="return confirm('@confirmMsg')">
                       <i class="bi bi-x-circle me-1"></i>Скасувати
                     </button>
                   </form>
                 }
-                @* Запит на повернення — після скасування гідом *@
+                @* Запит на повернення — тільки якщо скасовано гідом і ще не надіслано *@
                 @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.CancelledByGuide &&
                      b.Payment != null && b.Payment.RefundedAt == null) {
                   <form asp-action="RequestRefund" method="post" asp-route-id="@b.Id">
