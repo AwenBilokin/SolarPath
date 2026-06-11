@@ -1,48 +1,302 @@
+@using SolarPath.Web.Models
 @{ViewData["Title"] = "Адмін-панель";}
 
 <div style="font-size:1.4rem;font-weight:800;color:#1a2e1f;margin-bottom:4px;">Адміністрування</div>
 <div style="font-size:.83rem;color:#6b9275;margin-bottom:24px;">Загальна статистика системи SolarPath</div>
 
-<div class="row g-3 mb-4">
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="bi bi-signpost-2-fill"></i></div>
-      <div class="stat-value">@ViewBag.RoutesCount</div>
-      <div class="stat-label">Маршрутів всього</div>
-      <a asp-action="Routes" style="display:block;margin-top:12px;background:#f0fdf4;color:#16a34a;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Переглянути →</a>
-    </div>
-  </div>
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="bi bi-calendar-check-fill"></i></div>
-      <div class="stat-value">@ViewBag.BookingsCount</div>
-      <div class="stat-label">Бронювань всього</div>
-      <a asp-action="Bookings" style="display:block;margin-top:12px;background:#eff6ff;color:#1d4ed8;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Переглянути →</a>
-    </div>
-  </div>
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#f3e8ff;color:#7c3aed;"><i class="bi bi-people-fill"></i></div>
-      <div class="stat-value">@ViewBag.UsersCount</div>
-      <div class="stat-label">Користувачів</div>
-      <a asp-action="Users" style="display:block;margin-top:12px;background:#faf5ff;color:#7c3aed;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Переглянути →</a>
-    </div>
-  </div>
-  <div class="col-sm-6 col-xl-3">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:#fef9c3;color:#a16207;"><i class="bi bi-cash-stack"></i></div>
-      <div class="stat-value">@ViewBag.TotalRevenue.ToString("N0")</div>
-      <div class="stat-label">Дохід, ₴</div>
-      <a asp-action="Bookings" style="display:block;margin-top:12px;background:#fefce8;color:#a16207;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Деталі →</a>
-    </div>
-  </div>
-</div>
-
 @if (ViewBag.PendingRefunds > 0)
 {
-  <div class="alert alert-warning d-flex align-items-center gap-2">
+  <div class="alert alert-warning d-flex align-items-center gap-2 mb-4">
     <i class="bi bi-exclamation-triangle-fill"></i>
     <strong>@ViewBag.PendingRefunds запит(ів) на повернення коштів</strong> очікують обробки.
     <a asp-action="Bookings" class="ms-auto btn btn-sm btn-warning">Обробити</a>
   </div>
+}
+
+
+<div class="row g-3 mb-3">
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dcfce7;color:#16a34a;"><i class="bi bi-signpost-2-fill"></i></div>
+      <div class="stat-value">@ViewBag.RoutesCount</div>
+      <div class="stat-label">Маршрутів всього</div>
+      <div style="font-size:.75rem;color:#6b9275;margin-top:4px;">Активних: <strong style="color:#16a34a;">@ViewBag.ActiveRoutes</strong></div>
+      <a asp-action="Routes" style="display:block;margin-top:10px;background:#f0fdf4;color:#16a34a;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Переглянути →</a>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#dbeafe;color:#1d4ed8;"><i class="bi bi-calendar-check-fill"></i></div>
+      <div class="stat-value">@ViewBag.BookingsCount</div>
+      <div class="stat-label">Бронювань всього</div>
+      <div style="font-size:.75rem;color:#6b9275;margin-top:4px;">Завершено: <strong style="color:#1d4ed8;">@ViewBag.CompletedBookings</strong></div>
+      <a asp-action="Bookings" style="display:block;margin-top:10px;background:#eff6ff;color:#1d4ed8;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Переглянути →</a>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f3e8ff;color:#7c3aed;"><i class="bi bi-people-fill"></i></div>
+      <div class="stat-value">@ViewBag.UsersCount</div>
+      <div class="stat-label">Користувачів</div>
+      <div style="font-size:.75rem;color:#6b9275;margin-top:4px;">
+        Гідів: <strong style="color:#7c3aed;">@ViewBag.GuidesCount</strong> · Туристів: <strong style="color:#7c3aed;">@ViewBag.TouristsCount</strong>
+      </div>
+      <a asp-action="Users" style="display:block;margin-top:10px;background:#faf5ff;color:#7c3aed;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Переглянути →</a>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fef9c3;color:#a16207;"><i class="bi bi-cash-stack"></i></div>
+      <div class="stat-value">@ViewBag.TotalRevenue.ToString("N0")</div>
+      <div class="stat-label">Дохід, ₴</div>
+      <div style="font-size:.75rem;color:#6b9275;margin-top:4px;">Учасників: <strong style="color:#a16207;">@ViewBag.TotalParticipants</strong></div>
+      <a asp-action="Bookings" style="display:block;margin-top:10px;background:#fefce8;color:#a16207;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Деталі →</a>
+    </div>
+  </div>
+</div>
+
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #e5e7eb;text-align:center;">
+      <div style="font-size:1.6rem;font-weight:800;color:#f59e0b;">@ViewBag.AvgRating <span style="font-size:1rem;">★</span></div>
+      <div style="font-size:.78rem;color:#6b7280;">Середній рейтинг</div>
+      <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">@ViewBag.ReviewsCount відгуків</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #e5e7eb;text-align:center;">
+      <div style="font-size:1.6rem;font-weight:800;color:#ef4444;">@ViewBag.CancelledBookings</div>
+      <div style="font-size:.78rem;color:#6b7280;">Скасованих бронювань</div>
+      <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">
+        @{
+          var cancelRate = ViewBag.BookingsCount > 0
+            ? Math.Round((double)ViewBag.CancelledBookings / ViewBag.BookingsCount * 100, 1) : 0.0;
+        }
+        @cancelRate% від загальних
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #e5e7eb;text-align:center;">
+      <div style="font-size:1.6rem;font-weight:800;color:#10b981;">@ViewBag.NewUsersMonth</div>
+      <div style="font-size:.78rem;color:#6b7280;">Нових юзерів за 30 днів</div>
+      <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">реєстрацій</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #e5e7eb;text-align:center;">
+      <div style="font-size:1.6rem;font-weight:800;color:#6366f1;">@ViewBag.PendingRefunds</div>
+      <div style="font-size:.78rem;color:#6b7280;">Запити на повернення</div>
+      <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">очікують обробки</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-8">
+    <div style="background:#fff;border-radius:14px;padding:20px;border:1px solid #e5e7eb;">
+      <div style="font-size:.95rem;font-weight:700;color:#1a2e1f;margin-bottom:16px;">
+        <i class="bi bi-bar-chart-line-fill" style="color:#16a34a;margin-right:6px;"></i>Бронювання та дохід за 6 місяців
+      </div>
+      <canvas id="bookingsChart" height="100"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div style="background:#fff;border-radius:14px;padding:20px;border:1px solid #e5e7eb;height:100%;">
+      <div style="font-size:.95rem;font-weight:700;color:#1a2e1f;margin-bottom:16px;">
+        <i class="bi bi-pie-chart-fill" style="color:#7c3aed;margin-right:6px;"></i>Статуси бронювань
+      </div>
+      <canvas id="statusChart"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div style="background:#fff;border-radius:14px;padding:20px;border:1px solid #e5e7eb;">
+      <div style="font-size:.95rem;font-weight:700;color:#1a2e1f;margin-bottom:16px;">
+        <i class="bi bi-trophy-fill" style="color:#f59e0b;margin-right:6px;"></i>Топ-5 маршрутів за доходом
+      </div>
+      @{
+        var topRoutes = ViewBag.TopRoutes as dynamic;
+        int topRank = 1;
+        decimal maxRev = 1;
+        if (topRoutes != null)
+        {
+          foreach (var r in topRoutes) { if ((decimal)r.Revenue > maxRev) maxRev = (decimal)r.Revenue; }
+          foreach (var r in topRoutes)
+          {
+            var pct = maxRev > 0 ? (int)((decimal)r.Revenue / maxRev * 100) : 0;
+            string[] medalColors = {"#f59e0b","#9ca3af","#b45309","#6b7280","#6b7280"};
+            <div style="margin-bottom:14px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="font-size:.85rem;font-weight:700;color:@medalColors[topRank-1];min-width:18px;">#@topRank</span>
+                  <span style="font-size:.82rem;color:#374151;font-weight:600;">@r.Title</span>
+                </div>
+                <span style="font-size:.78rem;font-weight:700;color:#16a34a;">@((decimal)r.Revenue).ToString("N0") ₴</span>
+              </div>
+              <div style="background:#f3f4f6;border-radius:4px;height:6px;">
+                <div style="background:@(topRank==1?"#16a34a":topRank==2?"#3b82f6":"#a3a3a3");height:6px;border-radius:4px;width:@pct%;transition:width .5s;"></div>
+              </div>
+              <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">@r.Bookings бронювань</div>
+            </div>
+            topRank++;
+          }
+        }
+        else
+        {
+          <div style="color:#9ca3af;font-size:.85rem;">Немає даних</div>
+        }
+      }
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div style="background:#fff;border-radius:14px;padding:20px;border:1px solid #e5e7eb;">
+      <div style="font-size:.95rem;font-weight:700;color:#1a2e1f;margin-bottom:16px;">
+        <i class="bi bi-clock-history" style="color:#1d4ed8;margin-right:6px;"></i>Останні бронювання
+      </div>
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+          <thead>
+            <tr style="border-bottom:2px solid #f3f4f6;">
+              <th style="padding:6px 8px;text-align:left;color:#6b7280;font-weight:600;">#</th>
+              <th style="padding:6px 8px;text-align:left;color:#6b7280;font-weight:600;">Турист</th>
+              <th style="padding:6px 8px;text-align:left;color:#6b7280;font-weight:600;">Маршрут</th>
+              <th style="padding:6px 8px;text-align:center;color:#6b7280;font-weight:600;">Статус</th>
+              <th style="padding:6px 8px;text-align:right;color:#6b7280;font-weight:600;">Сума</th>
+            </tr>
+          </thead>
+          <tbody>
+            @{
+              var recent = ViewBag.RecentBookings as List<Booking>;
+              if (recent != null)
+              {
+                foreach (var b in recent)
+                {
+                  var (bg, fg) = b.BookingStatus switch {
+                    BookingStatus.Completed  => ("#dcfce7","#16a34a"),
+                    BookingStatus.Paid       => ("#dbeafe","#1d4ed8"),
+                    BookingStatus.Confirmed  => ("#e0f2fe","#0369a1"),
+                    BookingStatus.Pending    => ("#fef9c3","#a16207"),
+                    BookingStatus.Cancelled or BookingStatus.CancelledByGuide => ("#fee2e2","#dc2626"),
+                    BookingStatus.Refunded   => ("#f3e8ff","#7c3aed"),
+                    _                        => ("#f3f4f6","#6b7280")
+                  };
+                  <tr style="border-bottom:1px solid #f9fafb;">
+                    <td style="padding:7px 8px;color:#9ca3af;">@b.Id</td>
+                    <td style="padding:7px 8px;color:#374151;font-weight:500;">@b.Tourist.FullName</td>
+                    <td style="padding:7px 8px;color:#374151;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@b.Route.Title</td>
+                    <td style="padding:7px 8px;text-align:center;">
+                      <span style="background:@bg;color:@fg;border-radius:20px;padding:2px 9px;font-size:.72rem;font-weight:600;white-space:nowrap;">@b.BookingStatus</span>
+                    </td>
+                    <td style="padding:7px 8px;text-align:right;font-weight:700;color:#1a2e1f;">@b.TotalPrice.ToString("N0") ₴</td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+        <a asp-action="Bookings" style="display:block;margin-top:12px;text-align:center;font-size:.8rem;color:#16a34a;font-weight:600;text-decoration:none;">Всі бронювання →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(function(){
+  // ── Графік бронювань + дохід ─────────────────────────────────────────
+  const months  = @Html.Raw(ViewBag.ChartMonths);
+  const counts  = @Html.Raw(ViewBag.ChartCounts);
+  const revenue = @Html.Raw(ViewBag.ChartRevenue);
+
+  new Chart(document.getElementById('bookingsChart'), {
+    data: {
+      labels: months,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Бронювань',
+          data: counts,
+          backgroundColor: 'rgba(22,163,74,0.18)',
+          borderColor: '#16a34a',
+          borderWidth: 2,
+          borderRadius: 6,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Дохід (₴)',
+          data: revenue,
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245,158,11,0.08)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#f59e0b',
+          pointRadius: 4,
+          tension: 0.4,
+          fill: true,
+          yAxisID: 'y1'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 12 }, boxWidth: 14 } }
+      },
+      scales: {
+        y:  { type:'linear', display:true, position:'left',  title:{ display:true, text:'Бронювань' } },
+        y1: { type:'linear', display:true, position:'right', title:{ display:true, text:'₴' },
+              grid: { drawOnChartArea: false } }
+      }
+    }
+  });
+
+  // ── Пончик: статуси ──────────────────────────────────────────────────
+  @{
+    var statusGroups = ViewBag.StatusGroups as dynamic;
+    var statusLabels = new List<string>();
+    var statusCounts = new List<int>();
+    if (statusGroups != null)
+    {
+      foreach (var sg in statusGroups)
+      {
+        statusLabels.Add(sg.Status.ToString());
+        statusCounts.Add((int)sg.Count);
+      }
+    }
+  }
+  const sLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(statusLabels));
+  const sCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(statusCounts));
+
+  const palette = [
+    '#16a34a','#1d4ed8','#0369a1','#f59e0b',
+    '#ef4444','#dc2626','#7c3aed','#6b7280','#10b981'
+  ];
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: sLabels,
+      datasets: [{
+        data: sCounts,
+        backgroundColor: palette.slice(0, sLabels.length),
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position:'bottom', labels:{ font:{ size:11 }, boxWidth:12, padding:10 } }
+      }
+    }
+  });
+})();
+</script>
 }
