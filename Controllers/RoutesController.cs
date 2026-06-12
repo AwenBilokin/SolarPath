@@ -33,6 +33,55 @@ public class RoutesController : Controller
         return View(result);
     }
 
+    // ── підказки для пошуку (autocomplete) ───────────────────────────────
+    [HttpGet]
+    public async Task<IActionResult> Suggestions(string q)
+    {
+        if (string.IsNullOrWhiteSpace(q) || q.Trim().Length < 2)
+            return Json(Array.Empty<object>());
+
+        var s = q.Trim().ToLower();
+
+        // Маршрути за назвою
+        var routeRows = await _db.Routes
+            .Include(r => r.Category)
+            .Where(r => r.RouteStatus == RouteStatus.Published && r.Title.ToLower().Contains(s))
+            .OrderBy(r => r.Title)
+            .Take(6)
+            .Select(r => new { r.Id, r.Title, CategoryName = r.Category.Name, r.PricePerPerson })
+            .ToListAsync();
+
+        var routeMatches = routeRows.Select(r => new
+        {
+            type     = "route",
+            id       = r.Id,
+            title    = r.Title,
+            subtitle = r.CategoryName,
+            price    = (decimal?)r.PricePerPerson,
+            url      = Url.Action("Details", "Routes", new { id = r.Id })
+        });
+
+        // Категорії, що збігаються
+        var categoryRows = await _db.Categories
+            .Where(c => c.Name.ToLower().Contains(s))
+            .Take(3)
+            .Select(c => new { c.Id, c.Name })
+            .ToListAsync();
+
+        var categoryMatches = categoryRows.Select(c => new
+        {
+            type     = "category",
+            id       = c.Id,
+            title    = c.Name,
+            subtitle = "Категорія",
+            price    = (decimal?)null,
+            url      = Url.Action("Index", "Routes", new { categoryId = c.Id })
+        });
+
+        var result = categoryMatches.Cast<object>().Concat(routeMatches.Cast<object>()).Take(8);
+        return Json(result);
+    }
+
     public async Task<IActionResult> Details(int id)
     {
         var route = await _routeService.GetByIdAsync(id);

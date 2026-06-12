@@ -22,7 +22,13 @@ public class RouteService : IRouteService
         if (difficulty.HasValue)  q = q.Where(r => r.Difficulty == difficulty);
         if (maxPrice.HasValue)    q = q.Where(r => r.PricePerPerson <= maxPrice);
         if (!string.IsNullOrWhiteSpace(search))
-            q = q.Where(r => r.Title.Contains(search) || r.Description.Contains(search));
+        {
+            var s = search.Trim().ToLower();
+            q = q.Where(r =>
+                r.Title.ToLower().Contains(s) ||
+                r.Description.ToLower().Contains(s) ||
+                r.Category!.Name.ToLower().Contains(s));
+        }
 
         return await q.OrderByDescending(r => r.CreatedAt).ToListAsync();
     }
@@ -40,7 +46,13 @@ public class RouteService : IRouteService
         if (difficulty.HasValue)  q = q.Where(r => r.Difficulty == difficulty);
         if (maxPrice.HasValue)    q = q.Where(r => r.PricePerPerson <= maxPrice);
         if (!string.IsNullOrWhiteSpace(search))
-            q = q.Where(r => r.Title.Contains(search) || r.Description.Contains(search));
+        {
+            var s = search.Trim().ToLower();
+            q = q.Where(r =>
+                r.Title.ToLower().Contains(s) ||
+                r.Description.ToLower().Contains(s) ||
+                r.Category!.Name.ToLower().Contains(s));
+        }
 
         page = Math.Max(1, page);
         pageSize = pageSize <= 0 ? 9 : pageSize;
