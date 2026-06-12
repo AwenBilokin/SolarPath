@@ -139,12 +139,18 @@ public class BookingService : IBookingService
         await _notifications.NotifyRefundProcessedAsync(bookingId);
     }
 
-    public async Task StartBookingAsync(int bookingId)
+    public async Task<bool> StartBookingAsync(int bookingId)
     {
         var b = await _db.Bookings.FindAsync(bookingId);
-        if (b == null) return;
+        if (b == null) return false;
+
+        // Дозволяємо старт лише з підтвердженого статусу.
+        // Якщо турист встиг скасувати (RefundRequested/Cancelled) — гід отримає помилку.
+        if (b.BookingStatus != BookingStatus.Confirmed) return false;
+
         b.BookingStatus = BookingStatus.InProgress;
         await _db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<IEnumerable<Booking>> GetByTouristAsync(string touristId) =>

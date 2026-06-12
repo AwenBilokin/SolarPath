@@ -50,7 +50,7 @@
       <div class="stat-value">@ViewBag.TotalRevenue.ToString("N0")</div>
       <div class="stat-label">Дохід, ₴</div>
       <div style="font-size:.75rem;color:#6b9275;margin-top:4px;">Учасників: <strong style="color:#a16207;">@ViewBag.TotalParticipants</strong></div>
-      <a asp-action="Bookings" style="display:block;margin-top:10px;background:#fefce8;color:#a16207;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Деталі →</a>
+      <a asp-action="Revenue" style="display:block;margin-top:10px;background:#fefce8;color:#a16207;border-radius:8px;padding:5px;text-align:center;font-size:.8rem;font-weight:600;text-decoration:none;">Деталі →</a>
     </div>
   </div>
 </div>
@@ -137,7 +137,7 @@
                   <span style="font-size:.85rem;font-weight:700;color:@medalColors[topRank-1];min-width:18px;">#@topRank</span>
                   <span style="font-size:.82rem;color:#374151;font-weight:600;">@r.Title</span>
                 </div>
-                <span style="font-size:.78rem;font-weight:700;color:#16a34a;">@((decimal)r.Revenue).ToString("N0") ₴</span>
+                <span style="font-size:.78rem;font-weight:700;color:#16a34a;">@(((decimal)r.Revenue).ToString("N0")) ₴</span>
               </div>
               <div style="background:#f3f4f6;border-radius:4px;height:6px;">
                 <div style="background:@(topRank==1?"#16a34a":topRank==2?"#3b82f6":"#a3a3a3");height:6px;border-radius:4px;width:@pct%;transition:width .5s;"></div>
@@ -193,7 +193,7 @@
                     <td style="padding:7px 8px;text-align:center;">
                       <span style="background:@bg;color:@fg;border-radius:20px;padding:2px 9px;font-size:.72rem;font-weight:600;white-space:nowrap;">@b.BookingStatus</span>
                     </td>
-                    <td style="padding:7px 8px;text-align:right;font-weight:700;color:#1a2e1f;">@b.TotalPrice.ToString("N0") ₴</td>
+                    <td style="padding:7px 8px;text-align:right;font-weight:700;color:#1a2e1f;">@(b.TotalPrice.ToString("N0")) ₴</td>
                   </tr>
                 }
               }

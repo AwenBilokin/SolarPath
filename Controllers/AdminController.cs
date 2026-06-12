@@ -136,6 +136,34 @@ public class AdminController : Controller
         return View();
     }
 
+    public async Task<IActionResult> Revenue(int page = 1)
+    {
+        const int pageSize = 15;
+        page = Math.Max(1, page);
+
+        var query = _db.Payments
+            .Include(p => p.Booking).ThenInclude(b => b.Route)
+            .Include(p => p.Booking).ThenInclude(b => b.Tourist)
+            .Where(p => p.Booking.BookingStatus != BookingStatus.Cancelled
+                     && p.Booking.BookingStatus != BookingStatus.CancelledByGuide
+                     && p.Booking.BookingStatus != BookingStatus.Refunded
+                     && p.RefundedAt == null)
+            .OrderByDescending(p => p.PaidAt);
+
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        ViewBag.TotalRevenue = await query.SumAsync(p => (decimal?)p.Amount) ?? 0;
+
+        return View(new PagedResult<Payment>
+        {
+            Items = items,
+            TotalCount = total,
+            Page = page,
+            PageSize = pageSize
+        });
+    }
+
     public async Task<IActionResult> Routes() =>
         View(await _db.Routes.Include(r => r.Category).Include(r => r.Guide).ToListAsync());
 

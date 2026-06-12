@@ -43,8 +43,10 @@ public class GuideController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Start(int id)
     {
-        await _bookingService.StartBookingAsync(id);
-        TempData["Success"] = "Похід розпочато!";
+        var ok = await _bookingService.StartBookingAsync(id);
+        TempData[ok ? "Success" : "Error"] = ok
+            ? "Похід розпочато!"
+            : "Неможливо розпочати: бронювання вже не у статусі «Підтверджено» (можливо, турист його скасував).";
         return RedirectToAction(nameof(Dashboard));
     }
 

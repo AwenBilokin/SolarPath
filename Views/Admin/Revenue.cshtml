@@ -1,0 +1,58 @@
+@model SolarPath.Web.Models.PagedResult<SolarPath.Web.Models.Payment>
+@{ViewData["Title"] = "Дохід";}
+
+<div class="page-header">
+  <h1 class="page-title"><i class="bi bi-cash-stack me-2"></i>Дохід</h1>
+</div>
+
+<div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #e5e7eb;margin-bottom:18px;display:inline-block;">
+  <div style="font-size:.8rem;color:#6b7280;">Загальний дохід (без скасованих/повернутих)</div>
+  <div style="font-size:1.6rem;font-weight:800;color:#a16207;">@(ViewBag.TotalRevenue.ToString("N0")) ₴</div>
+</div>
+
+<div class="sp-table">
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>#</th><th>Маршрут</th><th>Турист</th><th>Дата оплати</th>
+        <th>Сума</th><th>Метод</th><th>Транзакція</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var p in Model.Items) {
+        <tr>
+          <td class="text-muted" style="font-size:.8rem;">@p.Id</td>
+          <td class="fw-600">@p.Booking?.Route?.Title</td>
+          <td>@p.Booking?.Tourist?.FullName</td>
+          <td>@p.PaidAt.ToString("dd.MM.yyyy HH:mm")</td>
+          <td class="fw-600" style="color:#16a34a;">@(p.Amount.ToString("N0")) ₴</td>
+          <td>@p.Method</td>
+          <td>
+            <span class="font-monospace" style="font-size:.78rem;color:#6b7280;">
+              @(p.GatewayTransactionId ?? "—")
+            </span>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (Model.TotalPages > 1) {
+  <nav style="margin-top:18px;display:flex;justify-content:center;">
+    <ul class="pagination">
+      <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Revenue", new { page = Model.Page - 1 })"><i class="bi bi-chevron-left"></i></a>
+      </li>
+      @for (int p = 1; p <= Model.TotalPages; p++) {
+        <li class="page-item @(p == Model.Page ? "active" : "")">
+          <a class="page-link" href="@Url.Action("Revenue", new { page = p })"
+             style="@(p == Model.Page ? "background:#16a34a;border-color:#16a34a;" : "color:#16a34a;")">@p</a>
+        </li>
+      }
+      <li class="page-item @(Model.HasNext ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Revenue", new { page = Model.Page + 1 })"><i class="bi bi-chevron-right"></i></a>
+      </li>
+    </ul>
+  </nav>
+}
