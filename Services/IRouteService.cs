@@ -5,6 +5,7 @@ namespace SolarPath.Web.Services;
 public interface IRouteService
 {
     Task<IEnumerable<Models.Route>> GetPublishedAsync(int? categoryId, DifficultyLevel? difficulty, decimal? maxPrice, string? search);
+    Task<PagedResult<Models.Route>> GetPublishedPagedAsync(int? categoryId, DifficultyLevel? difficulty, decimal? maxPrice, string? search, int page, int pageSize);
     Task<Models.Route?> GetByIdAsync(int id);
     Task<Models.Route> CreateAsync(Models.Route route);
     Task UpdateAsync(Models.Route route);

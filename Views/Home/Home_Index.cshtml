@@ -1,0 +1,157 @@
+@{ViewData["Title"] = "Головна";}
+@using SolarPath.Web.Models
+
+<!-- Hero -->
+<div style="
+  background: linear-gradient(160deg, #0d1f12 0%, #133d1c 55%, #0f2e16 100%);
+  border-radius: 20px;
+  padding: 72px 40px 60px;
+  margin-bottom: 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+">
+  <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:600px;height:350px;background:radial-gradient(ellipse,rgba(34,197,94,.2) 0%,transparent 65%);pointer-events:none;"></div>
+  <div style="position:relative;z-index:1;">
+    <div style="display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.22);color:#86efac;font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:999px;margin-bottom:18px;">
+      <i class="bi bi-star-fill" style="font-size:9px;"></i> Туристичні маршрути України
+    </div>
+    <h1 style="font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#ffffff;margin-bottom:12px;">
+      Відкривай Україну<br/><span style="background:linear-gradient(135deg,#4ade80,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">крок за кроком</span>
+    </h1>
+    <p style="color:rgba(255,255,255,.52);font-size:.97rem;max-width:400px;margin:0 auto 30px;line-height:1.65;">
+      Знаходь унікальні маршрути від досвідчених гідів, бронюй онлайн та вирушай у пригоду
+    </p>
+    <form asp-controller="Routes" asp-action="Index" method="get">
+      <div style="display:flex;align-items:center;max-width:440px;margin:0 auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13);border-radius:10px;padding:5px 5px 5px 14px;">
+        <i class="bi bi-search" style="color:rgba(255,255,255,.35);font-size:14px;margin-right:8px;flex-shrink:0;"></i>
+        <input type="text" name="search" placeholder="Назва маршруту, регіон..."
+          style="background:none;border:none;outline:none;color:#fff;font-size:.9rem;flex:1;min-width:0;font-family:inherit;"
+        />
+        <button type="submit" style="background:#16a34a;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-weight:600;font-size:.84rem;cursor:pointer;font-family:inherit;white-space:nowrap;">
+          Знайти →
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@{
+  var carouselRoutes = ((IEnumerable<SolarPath.Web.Models.Route>)ViewBag.PopularRoutes).Take(3).ToList();
+}
+@if (carouselRoutes.Any()) {
+  <div id="popularCarousel" class="carousel slide mb-4" data-bs-ride="carousel" style="border-radius:16px;overflow:hidden;">
+    <div class="carousel-indicators">
+      @for (int i = 0; i < carouselRoutes.Count; i++) {
+        <button type="button" data-bs-target="#popularCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i==0 ? "true" : "false")"></button>
+      }
+    </div>
+    <div class="carousel-inner">
+      @for (int i = 0; i < carouselRoutes.Count; i++) {
+        var r = carouselRoutes[i];
+        <div class="carousel-item @(i == 0 ? "active" : "")">
+          <a asp-controller="Routes" asp-action="Details" asp-route-id="@r.Id" style="text-decoration:none;">
+            <div style="position:relative;height:320px;">
+              <img src="@(r.ImageUrl ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80")"
+                   alt="@r.Title" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+              <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(13,31,18,.85) 0%, transparent 60%);"></div>
+              <div style="position:absolute;bottom:24px;left:28px;color:#fff;">
+                <span class="badge-difficulty badge-@r.Difficulty.ToString().ToLower()" style="margin-bottom:8px;display:inline-block;">@r.Difficulty</span>
+                <div style="font-size:1.4rem;font-weight:800;">@r.Title</div>
+                <div style="font-size:.9rem;opacity:.85;">@r.Category?.Name · @r.PricePerPerson ₴</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      }
+    </div>
+    @if (carouselRoutes.Count > 1) {
+      <button class="carousel-control-prev" type="button" data-bs-target="#popularCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#popularCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    }
+  </div>
+}
+
+<!-- Section header -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+  <div>
+    <div style="font-size:1.2rem;font-weight:700;color:#1a2e1f;letter-spacing:-.02em;">Популярні маршрути</div>
+    <div style="font-size:.83rem;color:#6b9275;margin-top:2px;">Найбільш затребувані серед мандрівників</div>
+  </div>
+  <a asp-controller="Routes" asp-action="Index"
+     style="display:inline-block;border:1px solid #d1d5db;border-radius:20px;padding:5px 14px;font-size:.82rem;font-weight:500;color:#6b7280;text-decoration:none;">
+    Всі маршрути →
+  </a>
+</div>
+
+<!-- Cards grid -->
+<div class="row g-3">
+  @foreach (var r in (IEnumerable<SolarPath.Web.Models.Route>)ViewBag.PopularRoutes) {
+    <div class="col-md-6 col-lg-4">
+      <a asp-controller="Routes" asp-action="Details" asp-route-id="@r.Id"
+         style="text-decoration:none;display:block;height:100%;">
+        <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;height:100%;transition:transform .2s,box-shadow .2s;"
+             onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 14px 36px rgba(22,163,74,.13)'"
+             onmouseout="this.style.transform='';this.style.boxShadow=''">
+
+          <!-- Image -->
+          <div style="position:relative;height:195px;overflow:hidden;flex-shrink:0;">
+            <img src="@(r.ImageUrl ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80")"
+                 alt="@r.Title"
+                 style="width:100%;height:100%;object-fit:cover;display:block;"/>
+            <div style="position:absolute;top:10px;left:10px;z-index:2;">
+              <span class="badge-difficulty badge-@r.Difficulty.ToString().ToLower()">@r.Difficulty</span>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div style="padding:14px;display:flex;flex-direction:column;flex:1;gap:0;">
+
+            <!-- Meta row -->
+            <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:.75rem;color:#6b9275;margin-bottom:8px;">
+              <span style="display:flex;align-items:center;gap:3px;">
+                <i class="bi bi-tag-fill"></i>@r.Category?.Name
+              </span>
+              <span style="display:flex;align-items:center;gap:3px;">
+                <i class="bi bi-geo-alt-fill"></i>@r.DistanceKm км
+              </span>
+              <span style="display:flex;align-items:center;gap:3px;">
+                <i class="bi bi-clock-fill"></i>@(r.DurationMinutes / 60)г
+              </span>
+            </div>
+
+            <!-- Title -->
+            <div style="font-size:.95rem;font-weight:700;color:#1a2e1f;line-height:1.3;margin-bottom:8px;">
+              @r.Title
+            </div>
+
+            <!-- Stars -->
+            <div style="font-size:.77rem;color:#f59e0b;margin-bottom:12px;">
+              @for (int i = 1; i <= 5; i++) {
+                <i class="bi @(i <= Math.Round(r.AverageRating) ? "bi-star-fill" : "bi-star")"
+                   style="@(i > Math.Round(r.AverageRating) ? "color:#d1d5db;" : "")"></i>
+              }
+              <span style="font-size:.73rem;color:#9ca3af;margin-left:4px;">(@r.Reviews.Count)</span>
+            </div>
+
+            <!-- Footer -->
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid #f0f4f0;margin-top:auto;">
+              <div style="font-size:1rem;font-weight:800;color:#166534;">
+                @r.PricePerPerson ₴
+                <span style="font-size:.7rem;font-weight:500;color:#6b9275;">/особу</span>
+              </div>
+              <span style="background:#f0fdf4;color:#166534;border-radius:7px;padding:5px 12px;font-size:.78rem;font-weight:600;">
+                Детальніше
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </a>
+    </div>
+  }
+</div>

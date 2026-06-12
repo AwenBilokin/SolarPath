@@ -27,6 +27,39 @@ public class RouteService : IRouteService
         return await q.OrderByDescending(r => r.CreatedAt).ToListAsync();
     }
 
+    public async Task<PagedResult<Models.Route>> GetPublishedPagedAsync(
+        int? categoryId, DifficultyLevel? difficulty, decimal? maxPrice, string? search, int page, int pageSize)
+    {
+        var q = _db.Routes
+            .Include(r => r.Category)
+            .Include(r => r.Guide)
+            .Include(r => r.Reviews)
+            .Where(r => r.RouteStatus == RouteStatus.Published);
+
+        if (categoryId.HasValue)  q = q.Where(r => r.CategoryId == categoryId);
+        if (difficulty.HasValue)  q = q.Where(r => r.Difficulty == difficulty);
+        if (maxPrice.HasValue)    q = q.Where(r => r.PricePerPerson <= maxPrice);
+        if (!string.IsNullOrWhiteSpace(search))
+            q = q.Where(r => r.Title.Contains(search) || r.Description.Contains(search));
+
+        page = Math.Max(1, page);
+        pageSize = pageSize <= 0 ? 9 : pageSize;
+
+        var total = await q.CountAsync();
+        var items = await q.OrderByDescending(r => r.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Models.Route>
+        {
+            Items = items,
+            TotalCount = total,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
     public async Task<Models.Route?> GetByIdAsync(int id) =>
         await _db.Routes
             .Include(r => r.Category)

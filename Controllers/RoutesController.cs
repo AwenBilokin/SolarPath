@@ -21,15 +21,16 @@ public class RoutesController : Controller
     { _routeService = rs; _db = db; _userManager = um; _env = env; }
 
     public async Task<IActionResult> Index(int? categoryId, DifficultyLevel? difficulty,
-        decimal? maxPrice, string? search)
+        decimal? maxPrice, string? search, int page = 1)
     {
-        var routes = await _routeService.GetPublishedAsync(categoryId, difficulty, maxPrice, search);
+        const int pageSize = 9;
+        var result = await _routeService.GetPublishedPagedAsync(categoryId, difficulty, maxPrice, search, page, pageSize);
         ViewBag.Categories = await _db.Categories.ToListAsync();
         ViewBag.SelectedCategory  = categoryId;
         ViewBag.SelectedDifficulty = difficulty;
         ViewBag.MaxPrice  = maxPrice;
         ViewBag.Search    = search;
-        return View(routes);
+        return View(result);
     }
 
     public async Task<IActionResult> Details(int id)

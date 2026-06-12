@@ -178,13 +178,28 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Routes));
     }
 
-    public async Task<IActionResult> Bookings() =>
-        View(await _db.Bookings
+    public async Task<IActionResult> Bookings(int page = 1)
+    {
+        const int pageSize = 15;
+        page = Math.Max(1, page);
+
+        var query = _db.Bookings
             .Include(b => b.Route)
             .Include(b => b.Tourist)
             .Include(b => b.Payment)
-            .OrderByDescending(b => b.CreatedAt)
-            .ToListAsync());
+            .OrderByDescending(b => b.CreatedAt);
+
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        return View(new PagedResult<Booking>
+        {
+            Items = items,
+            TotalCount = total,
+            Page = page,
+            PageSize = pageSize
+        });
+    }
 
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> ProcessRefund(int id)

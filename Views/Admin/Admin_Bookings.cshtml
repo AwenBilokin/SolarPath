@@ -1,0 +1,80 @@
+@model SolarPath.Web.Models.PagedResult<SolarPath.Web.Models.Booking>
+@{ViewData["Title"] = "Всі бронювання";}
+
+<div class="page-header">
+  <h1 class="page-title"><i class="bi bi-calendar-check-fill me-2"></i>Всі бронювання</h1>
+</div>
+
+<div class="sp-table">
+  <table class="table table-hover mb-0">
+    <thead>
+      <tr>
+        <th>#</th><th>Маршрут</th><th>Турист</th><th>Дата</th>
+        <th>Сума</th><th>Статус</th><th>Транзакція</th><th>Дія</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var b in Model.Items) {
+        <tr>
+          <td class="text-muted" style="font-size:.8rem;">@b.Id</td>
+          <td class="fw-600">@b.Route?.Title</td>
+          <td>@b.Tourist?.FullName</td>
+          <td>@b.ScheduledDate.ToString("dd.MM.yyyy")</td>
+          <td class="fw-600">@b.TotalPrice ₴</td>
+          <td>
+            @{
+              var (cls, label) = b.BookingStatus switch {
+                SolarPath.Web.Models.BookingStatus.Paid             => ("bg-success",            "Оплачено"),
+                SolarPath.Web.Models.BookingStatus.Confirmed        => ("bg-primary",            "Підтверджено"),
+                SolarPath.Web.Models.BookingStatus.InProgress       => ("bg-info",               "В процесі"),
+                SolarPath.Web.Models.BookingStatus.Completed        => ("bg-secondary",          "Завершено"),
+                SolarPath.Web.Models.BookingStatus.Cancelled        => ("bg-danger",             "Скасовано"),
+                SolarPath.Web.Models.BookingStatus.CancelledByGuide => ("bg-danger",             "Відхилено"),
+                SolarPath.Web.Models.BookingStatus.RefundRequested  => ("bg-warning text-dark",  "Повернення"),
+                SolarPath.Web.Models.BookingStatus.Refunded         => ("bg-secondary",          "Повернено"),
+                SolarPath.Web.Models.BookingStatus.Pending          => ("bg-warning text-dark",  "Очікується"),
+                _ => ("bg-secondary", b.BookingStatus.ToString())
+              };
+            }
+            <span class="badge @cls">@label</span>
+          </td>
+          <td>
+            <span class="font-monospace" style="font-size:.78rem;color:#6b7280;">
+              @(b.Payment?.GatewayTransactionId ?? "—")
+            </span>
+          </td>
+          <td>
+            @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.RefundRequested) {
+              <form asp-action="ProcessRefund" asp-route-id="@b.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-sm btn-warning"
+                        onclick="return confirm('Підтвердити повернення @b.TotalPrice ₴?')">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i>Повернути
+                </button>
+              </form>
+            }
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (Model.TotalPages > 1) {
+  <nav style="margin-top:18px;display:flex;justify-content:center;">
+    <ul class="pagination">
+      <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Bookings", new { page = Model.Page - 1 })"><i class="bi bi-chevron-left"></i></a>
+      </li>
+      @for (int p = 1; p <= Model.TotalPages; p++) {
+        <li class="page-item @(p == Model.Page ? "active" : "")">
+          <a class="page-link" href="@Url.Action("Bookings", new { page = p })"
+             style="@(p == Model.Page ? "background:#16a34a;border-color:#16a34a;" : "color:#16a34a;")">@p</a>
+        </li>
+      }
+      <li class="page-item @(Model.HasNext ? "" : "disabled")">
+        <a class="page-link" href="@Url.Action("Bookings", new { page = Model.Page + 1 })"><i class="bi bi-chevron-right"></i></a>
+      </li>
+    </ul>
+  </nav>
+}
