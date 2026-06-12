@@ -35,7 +35,7 @@ public class GuideController : Controller
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Reject(int id)
     {
-        await _bookingService.CancelBookingAsync(id);
+        await _bookingService.RejectBookingAsync(id);
         TempData["Success"] = "Бронювання відхилено.";
         return RedirectToAction(nameof(Dashboard));
     }

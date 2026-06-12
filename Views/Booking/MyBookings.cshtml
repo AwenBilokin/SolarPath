@@ -44,11 +44,21 @@
                   SolarPath.Web.Models.BookingStatus.CancelledByGuide => ("bg-danger",            "Відхилено гідом"),
                   SolarPath.Web.Models.BookingStatus.RefundRequested  => ("bg-warning text-dark", "Повернення надіслано"),
                   SolarPath.Web.Models.BookingStatus.Refunded         => ("bg-secondary",         "Кошти повернено"),
-                  SolarPath.Web.Models.BookingStatus.Pending          => ("bg-warning text-dark", "Очікується"),
+                  SolarPath.Web.Models.BookingStatus.Pending          => ("bg-warning text-dark", "Очікує оплати"),
                   _ => ("bg-secondary", b.BookingStatus.ToString())
                 };
               }
               <span class="badge @cls">@label</span>
+              @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.Pending) {
+                var minutesLeft = 10 - (int)(DateTime.UtcNow - b.CreatedAt).TotalMinutes;
+                <div style="font-size:.72rem;color:#9ca3af;margin-top:2px;">
+                  @if (minutesLeft > 0) {
+                    <text>Автоскасування через ~@minutesLeft хв</text>
+                  } else {
+                    <text>Незабаром буде скасовано</text>
+                  }
+                </div>
+              }
             </td>
             <td>
               <span class="font-monospace" style="font-size:.78rem;color:#6b7280;">

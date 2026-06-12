@@ -27,6 +27,7 @@ builder.Services.ConfigureApplicationCookie(opts => opts.LoginPath = "/Account/L
 builder.Services.AddScoped<IRouteService,   RouteService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddHostedService<PendingBookingsCleanupService>();
 
 // Для Railway — forwarded headers щоб HTTPS працював правильно
 builder.Services.Configure<ForwardedHeadersOptions>(opts =>

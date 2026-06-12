@@ -95,6 +95,27 @@ public class BookingService : IBookingService
         await _notifications.NotifyBookingCancelledAsync(bookingId);
     }
 
+    // ── відхилення гідом ────────────────────────────────────────────────
+    // Якщо оплачено → CancelledByGuide (турист сам ініціює повернення через RequestRefund),
+    // якщо не оплачено → Cancelled
+    public async Task RejectBookingAsync(int bookingId)
+    {
+        var b = await _db.Bookings
+            .Include(x => x.Payment)
+            .FirstOrDefaultAsync(x => x.Id == bookingId);
+        if (b == null) return;
+
+        var route = await _db.Routes.FindAsync(b.RouteId);
+        if (route != null) route.AvailableSlots += b.ParticipantsCount;
+
+        b.BookingStatus = (b.Payment != null && b.Payment.RefundedAt == null)
+            ? BookingStatus.CancelledByGuide
+            : BookingStatus.Cancelled;
+
+        await _db.SaveChangesAsync();
+        await _notifications.NotifyBookingCancelledAsync(bookingId);
+    }
+
     public async Task CompleteBookingAsync(int bookingId)
     {
         var b = await _db.Bookings.FindAsync(bookingId);
