@@ -36,6 +36,46 @@
   </div>
 </div>
 
+@{
+  var carouselRoutes = ((IEnumerable<SolarPath.Web.Models.Route>)ViewBag.PopularRoutes).Take(3).ToList();
+}
+@if (carouselRoutes.Any()) {
+  <div id="popularCarousel" class="carousel slide mb-4" data-bs-ride="carousel" style="border-radius:16px;overflow:hidden;">
+    <div class="carousel-indicators">
+      @for (int i = 0; i < carouselRoutes.Count; i++) {
+        <button type="button" data-bs-target="#popularCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="@(i==0 ? "true" : "false")"></button>
+      }
+    </div>
+    <div class="carousel-inner">
+      @for (int i = 0; i < carouselRoutes.Count; i++) {
+        var r = carouselRoutes[i];
+        <div class="carousel-item @(i == 0 ? "active" : "")">
+          <a asp-controller="Routes" asp-action="Details" asp-route-id="@r.Id" style="text-decoration:none;">
+            <div style="position:relative;height:320px;">
+              <img src="@(r.ImageUrl ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80")"
+                   alt="@r.Title" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+              <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(13,31,18,.85) 0%, transparent 60%);"></div>
+              <div style="position:absolute;bottom:24px;left:28px;color:#fff;">
+                <span class="badge-difficulty badge-@r.Difficulty.ToString().ToLower()" style="margin-bottom:8px;display:inline-block;">@r.Difficulty</span>
+                <div style="font-size:1.4rem;font-weight:800;">@r.Title</div>
+                <div style="font-size:.9rem;opacity:.85;">@r.Category?.Name · @r.PricePerPerson ₴</div>
+              </div>
+            </div>
+          </a>
+        </div>
+      }
+    </div>
+    @if (carouselRoutes.Count > 1) {
+      <button class="carousel-control-prev" type="button" data-bs-target="#popularCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#popularCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    }
+  </div>
+}
+
 <!-- Section header -->
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
   <div>

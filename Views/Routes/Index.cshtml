@@ -1,8 +1,8 @@
-@model IEnumerable<SolarPath.Web.Models.Route>
+@model SolarPath.Web.Models.PagedResult<SolarPath.Web.Models.Route>
 @{ViewData["Title"] = "Маршрути";}
 
 <div style="font-size:1.2rem;font-weight:700;color:#1a2e1f;letter-spacing:-.02em;">Каталог маршрутів</div>
-<div style="font-size:.83rem;color:#6b9275;margin-top:2px;margin-bottom:18px;">Знайдено: @Model.Count() маршрутів</div>
+<div style="font-size:.83rem;color:#6b9275;margin-top:2px;margin-bottom:18px;">Знайдено: @Model.TotalCount маршрутів</div>
 
 <div class="row g-3">
   <!-- Sidebar -->
@@ -50,13 +50,13 @@
 
   <!-- Grid -->
   <div class="col-lg-9">
-    @if (!Model.Any()) {
+    @if (!Model.Items.Any()) {
       <div style="background:#e0f2fe;color:#0369a1;border-radius:10px;padding:14px 18px;font-size:.875rem;">
         <i class="bi bi-info-circle me-2"></i>За обраними фільтрами маршрутів не знайдено.
       </div>
     } else {
       <div class="row g-3">
-        @foreach (var r in Model) {
+        @foreach (var r in Model.Items) {
           <div class="col-md-6 col-xl-4">
             <a asp-controller="Routes" asp-action="Details" asp-route-id="@r.Id"
                style="text-decoration:none;display:block;height:100%;">
@@ -110,6 +110,29 @@
           </div>
         }
       </div>
+
+      @if (Model.TotalPages > 1) {
+        <nav style="margin-top:24px;display:flex;justify-content:center;">
+          <ul class="pagination">
+            <li class="page-item @(Model.HasPrevious ? "" : "disabled")">
+              <a class="page-link" href="@Url.Action("Index", new { categoryId = ViewBag.SelectedCategory, difficulty = ViewBag.SelectedDifficulty, maxPrice = ViewBag.MaxPrice, search = ViewBag.Search, page = Model.Page - 1 })">
+                <i class="bi bi-chevron-left"></i>
+              </a>
+            </li>
+            @for (int p = 1; p <= Model.TotalPages; p++) {
+              <li class="page-item @(p == Model.Page ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { categoryId = ViewBag.SelectedCategory, difficulty = ViewBag.SelectedDifficulty, maxPrice = ViewBag.MaxPrice, search = ViewBag.Search, page = p })"
+                   style="@(p == Model.Page ? "background:#16a34a;border-color:#16a34a;" : "color:#16a34a;")">@p</a>
+              </li>
+            }
+            <li class="page-item @(Model.HasNext ? "" : "disabled")">
+              <a class="page-link" href="@Url.Action("Index", new { categoryId = ViewBag.SelectedCategory, difficulty = ViewBag.SelectedDifficulty, maxPrice = ViewBag.MaxPrice, search = ViewBag.Search, page = Model.Page + 1 })">
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      }
     }
   </div>
 </div>
