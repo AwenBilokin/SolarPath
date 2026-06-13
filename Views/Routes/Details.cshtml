@@ -8,7 +8,7 @@
 
     
     <div class="detail-hero mb-4">
-      <img src="@(Model.ImageUrl ?? "/images/route-placeholder.svg")"
+      <img src="@(string.IsNullOrWhiteSpace(Model.ImageUrl) ? "/images/route-placeholder.svg" : Model.ImageUrl)"
            onerror="this.onerror=null;this.src='/images/route-placeholder.svg';"
            alt="@Model.Title"/>
       <span class="badge-difficulty badge-@Model.Difficulty.ToString().ToLower() detail-badge">@Model.Difficulty</span>

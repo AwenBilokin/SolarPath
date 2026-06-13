@@ -16,6 +16,7 @@ public static class SeedData
         {
             // Базові маршрути вже існують — додаємо лише нові (якщо ще не додані)
             await SeedAdditionalRoutesAsync(services);
+            await FixBrokenImageUrlsAsync(services);
             return;
         }
 
@@ -45,7 +46,7 @@ public static class SeedData
         var r9 = new RouteModel { Title="Велотур Південним Бугом — Гранітні каньйони", Description="Маршрут вздовж порогів і гранітних скель Південного Бугу через Мигію та Гард. Краєвиди, що нагадують Скандинавію — ідеально для любителів активного відпочинку на природі.", Difficulty=DifficultyLevel.Medium, DistanceKm=42.0, DurationMinutes=300, MaxParticipants=12, AvailableSlots=12, PricePerPerson=750, SeasonStart=new DateTime(2025,4,15), SeasonEnd=new DateTime(2025,10,15), RouteStatus=RouteStatus.Published, CategoryId=2, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-6) };
         var r10 = new RouteModel { Title="Сплав по Стрию — Карпатська течія", Description="Захоплюючий рафтинг по гірській річці Стрий з порогами різної складності. Інструктаж, спорядження та незабутні емоції серед карпатських лісів включені.", Difficulty=DifficultyLevel.Hard, DistanceKm=16.0, DurationMinutes=240, MaxParticipants=8, AvailableSlots=8, PricePerPerson=950, SeasonStart=new DateTime(2025,5,1), SeasonEnd=new DateTime(2025,9,15), RouteStatus=RouteStatus.Published, CategoryId=4, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1530866495561-507c9faab2ed?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-5) };
         var r11 = new RouteModel { Title="Тунель кохання — Клевань", Description="Знаменита залізнична гілка, оточена живоплотом з дерев, що утворює природний тунель. Романтична легка прогулянка, особливо красива влітку та восени.", Difficulty=DifficultyLevel.Easy, DistanceKm=3.0, DurationMinutes=90, MaxParticipants=20, AvailableSlots=20, PricePerPerson=280, SeasonStart=new DateTime(2025,4,1), SeasonEnd=new DateTime(2025,10,31), RouteStatus=RouteStatus.Published, CategoryId=1, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-4) };
-        var r12 = new RouteModel { Title="Львів — Підземними легендами старого міста", Description="Пішохідна екскурсія старовинними вуличками, площами та внутрішніми двориками Львова з відвідуванням підземель та оглядом архітектури різних епох.", Difficulty=DifficultyLevel.Easy, DistanceKm=5.5, DurationMinutes=210, MaxParticipants=20, AvailableSlots=20, PricePerPerson=420, SeasonStart=new DateTime(2025,1,1), SeasonEnd=new DateTime(2025,12,31), RouteStatus=RouteStatus.Published, CategoryId=3, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1599394020900-19c4843a8a93?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-3) };
+        var r12 = new RouteModel { Title="Львів — Підземними легендами старого міста", Description="Пішохідна екскурсія старовинними вуличками, площами та внутрішніми двориками Львова з відвідуванням підземель та оглядом архітектури різних епох.", Difficulty=DifficultyLevel.Easy, DistanceKm=5.5, DurationMinutes=210, MaxParticipants=20, AvailableSlots=20, PricePerPerson=420, SeasonStart=new DateTime(2025,1,1), SeasonEnd=new DateTime(2025,12,31), RouteStatus=RouteStatus.Published, CategoryId=3, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-3) };
         var r13 = new RouteModel { Title="Бескиди — Хребтова стежка Парашки", Description="Класичний гірський маршрут по гребеню Сколівських Бескидів з мальовничими видами на полонини та сусідні хребти. Чудовий варіант для новачків у горах.", Difficulty=DifficultyLevel.Medium, DistanceKm=14.0, DurationMinutes=360, MaxParticipants=14, AvailableSlots=14, PricePerPerson=600, SeasonStart=new DateTime(2025,5,1), SeasonEnd=new DateTime(2025,10,20), RouteStatus=RouteStatus.Published, CategoryId=5, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-2) };
         var r14 = new RouteModel { Title="Велотур Буковиною — Дерев'яні церкви та полонини", Description="Маршрут через мальовничі села Буковини з відвідуванням дерев'яних церков ЮНЕСКО, сирних ферм та гірських полонин з традиційними стравами.", Difficulty=DifficultyLevel.Medium, DistanceKm=58.0, DurationMinutes=420, MaxParticipants=10, AvailableSlots=10, PricePerPerson=1100, SeasonStart=new DateTime(2025,5,1), SeasonEnd=new DateTime(2025,10,1), RouteStatus=RouteStatus.Published, CategoryId=2, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1601122700611-369bc1a96b71?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-1) };
         var r15 = new RouteModel { Title="Каякінг по Десні — Тиха річкова подорож", Description="Спокійний сплав на каяках по чистих водах Десни серед заплавних лісів і пляжів. Підходить для початківців, включає зупинки для відпочинку та купання.", Difficulty=DifficultyLevel.Easy, DistanceKm=20.0, DurationMinutes=270, MaxParticipants=14, AvailableSlots=14, PricePerPerson=550, SeasonStart=new DateTime(2025,5,15), SeasonEnd=new DateTime(2025,9,15), RouteStatus=RouteStatus.Published, CategoryId=4, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow };
@@ -105,11 +106,11 @@ public static class SeedData
             new RoutePoint { RouteId=r8.Id, Title="Дозорна вежа",    Latitude=48.5130, Longitude=26.4930, PointType=PointType.Highlight, OrderIndex=1 },
             new RoutePoint { RouteId=r8.Id, Title="Оглядовий майданчик над Дністром", Latitude=48.5118, Longitude=26.4940, PointType=PointType.Finish, OrderIndex=2 }
         );
-        // Точки для Південного Бугу
+        // Точки для Південного Бугу — від Мигії на південь до Гарду (за течією парку Бузький Гард)
         db.RoutePoints.AddRange(
             new RoutePoint { RouteId=r9.Id, Title="Старт — Мигія",     Latitude=47.7270, Longitude=31.0190, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r9.Id, Title="Гранітні пороги",   Latitude=47.7510, Longitude=31.0420, PointType=PointType.Highlight, OrderIndex=1 },
-            new RoutePoint { RouteId=r9.Id, Title="Фініш — урочище Гард", Latitude=47.7825, Longitude=31.0680, PointType=PointType.Finish, OrderIndex=2 }
+            new RoutePoint { RouteId=r9.Id, Title="Гранітні пороги",   Latitude=47.7050, Longitude=31.0080, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r9.Id, Title="Фініш — урочище Гард", Latitude=47.6780, Longitude=30.9950, PointType=PointType.Finish, OrderIndex=2 }
         );
         // Точки для сплаву по Стрию
         db.RoutePoints.AddRange(
@@ -142,11 +143,12 @@ public static class SeedData
             new RoutePoint { RouteId=r14.Id, Title="Дерев'яна церква ЮНЕСКО",  Latitude=48.1850, Longitude=25.7600, PointType=PointType.Highlight, OrderIndex=1 },
             new RoutePoint { RouteId=r14.Id, Title="Фініш — полонина Руська",  Latitude=48.0950, Longitude=25.5400, PointType=PointType.Finish,    OrderIndex=2 }
         );
-        // Точки для Десни
+        // Точки для Десни — слідують вигину річки на південний захід від Новгород-Сіверського
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r15.Id, Title="Старт — Новгород-Сіверський", Latitude=52.0010, Longitude=33.2630, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r15.Id, Title="Піщаний пляж",                Latitude=51.9700, Longitude=33.2200, PointType=PointType.Highlight, OrderIndex=1 },
-            new RoutePoint { RouteId=r15.Id, Title="Фініш — с. Леньків",          Latitude=51.9400, Longitude=33.1700, PointType=PointType.Finish,    OrderIndex=2 }
+            new RoutePoint { RouteId=r15.Id, Title="Старт — Новгород-Сіверський (пристань)", Latitude=52.0083, Longitude=33.2656, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r15.Id, Title="Вигин річки біля с. Пушкарі",            Latitude=51.9930, Longitude=33.2080, PointType=PointType.Checkpoint, OrderIndex=1 },
+            new RoutePoint { RouteId=r15.Id, Title="Піщаний пляж біля с. Бирине",            Latitude=51.9700, Longitude=33.1650, PointType=PointType.Highlight,  OrderIndex=2 },
+            new RoutePoint { RouteId=r15.Id, Title="Фініш — с. Леньківка",                   Latitude=51.9520, Longitude=33.1180, PointType=PointType.Finish,     OrderIndex=3 }
         );
 
         await db.SaveChangesAsync();
@@ -221,8 +223,8 @@ public static class SeedData
              new RouteModel { Title="Велотур Південним Бугом — Гранітні каньйони", Description="Маршрут вздовж порогів і гранітних скель Південного Бугу через Мигію та Гард. Краєвиди, що нагадують Скандинавію — ідеально для любителів активного відпочинку на природі.", Difficulty=DifficultyLevel.Medium, DistanceKm=42.0, DurationMinutes=300, MaxParticipants=12, AvailableSlots=12, PricePerPerson=750, SeasonStart=new DateTime(2025,4,15), SeasonEnd=new DateTime(2025,10,15), RouteStatus=RouteStatus.Published, CategoryId=2, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-6) },
              new[] {
                 new RoutePoint { Title="Старт — Мигія",     Latitude=47.7270, Longitude=31.0190, PointType=PointType.Start,     OrderIndex=0 },
-                new RoutePoint { Title="Гранітні пороги",   Latitude=47.7510, Longitude=31.0420, PointType=PointType.Highlight, OrderIndex=1 },
-                new RoutePoint { Title="Фініш — урочище Гард", Latitude=47.7825, Longitude=31.0680, PointType=PointType.Finish, OrderIndex=2 }
+                new RoutePoint { Title="Гранітні пороги",   Latitude=47.7050, Longitude=31.0080, PointType=PointType.Highlight, OrderIndex=1 },
+                new RoutePoint { Title="Фініш — урочище Гард", Latitude=47.6780, Longitude=30.9950, PointType=PointType.Finish, OrderIndex=2 }
              },
              null),
 
@@ -245,7 +247,7 @@ public static class SeedData
              new Review { Rating=5, Text="Дуже романтичне місце! Радимо приїжджати на світанку, поки немає натовпу.", IsVerified=true, CreatedAt=DateTime.UtcNow.AddHours(-10) }),
 
             ("Львів — Підземними легендами старого міста",
-             new RouteModel { Title="Львів — Підземними легендами старого міста", Description="Пішохідна екскурсія старовинними вуличками, площами та внутрішніми двориками Львова з відвідуванням підземель та оглядом архітектури різних епох.", Difficulty=DifficultyLevel.Easy, DistanceKm=5.5, DurationMinutes=210, MaxParticipants=20, AvailableSlots=20, PricePerPerson=420, SeasonStart=new DateTime(2025,1,1), SeasonEnd=new DateTime(2025,12,31), RouteStatus=RouteStatus.Published, CategoryId=3, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1599394020900-19c4843a8a93?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-3) },
+             new RouteModel { Title="Львів — Підземними легендами старого міста", Description="Пішохідна екскурсія старовинними вуличками, площами та внутрішніми двориками Львова з відвідуванням підземель та оглядом архітектури різних епох.", Difficulty=DifficultyLevel.Easy, DistanceKm=5.5, DurationMinutes=210, MaxParticipants=20, AvailableSlots=20, PricePerPerson=420, SeasonStart=new DateTime(2025,1,1), SeasonEnd=new DateTime(2025,12,31), RouteStatus=RouteStatus.Published, CategoryId=3, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow.AddDays(-3) },
              new[] {
                 new RoutePoint { Title="Площа Ринок",        Latitude=49.8419, Longitude=24.0315, PointType=PointType.Start,     OrderIndex=0 },
                 new RoutePoint { Title="Латинський собор",   Latitude=49.8425, Longitude=24.0330, PointType=PointType.Checkpoint, OrderIndex=1 },
@@ -275,9 +277,10 @@ public static class SeedData
             ("Каякінг по Десні — Тиха річкова подорож",
              new RouteModel { Title="Каякінг по Десні — Тиха річкова подорож", Description="Спокійний сплав на каяках по чистих водах Десни серед заплавних лісів і пляжів. Підходить для початківців, включає зупинки для відпочинку та купання.", Difficulty=DifficultyLevel.Easy, DistanceKm=20.0, DurationMinutes=270, MaxParticipants=14, AvailableSlots=14, PricePerPerson=550, SeasonStart=new DateTime(2025,5,15), SeasonEnd=new DateTime(2025,9,15), RouteStatus=RouteStatus.Published, CategoryId=4, GuideId=guide.Id, ImageUrl="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1200&q=85&fit=crop&auto=format", CreatedAt=DateTime.UtcNow },
              new[] {
-                new RoutePoint { Title="Старт — Новгород-Сіверський", Latitude=52.0010, Longitude=33.2630, PointType=PointType.Start,     OrderIndex=0 },
-                new RoutePoint { Title="Піщаний пляж",                Latitude=51.9700, Longitude=33.2200, PointType=PointType.Highlight, OrderIndex=1 },
-                new RoutePoint { Title="Фініш — с. Леньків",          Latitude=51.9400, Longitude=33.1700, PointType=PointType.Finish,    OrderIndex=2 }
+                new RoutePoint { Title="Старт — Новгород-Сіверський (пристань)", Latitude=52.0083, Longitude=33.2656, PointType=PointType.Start,     OrderIndex=0 },
+                new RoutePoint { Title="Вигин річки біля с. Пушкарі",            Latitude=51.9930, Longitude=33.2080, PointType=PointType.Checkpoint, OrderIndex=1 },
+                new RoutePoint { Title="Піщаний пляж біля с. Бирине",            Latitude=51.9700, Longitude=33.1650, PointType=PointType.Highlight,  OrderIndex=2 },
+                new RoutePoint { Title="Фініш — с. Леньківка",                   Latitude=51.9520, Longitude=33.1180, PointType=PointType.Finish,     OrderIndex=3 }
              },
              null),
         };
@@ -309,5 +312,87 @@ public static class SeedData
         }
 
         if (addedAny) await db.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Виправляє посилання на зображення, які виявились мертвими (404/403 на Unsplash).
+    /// Знаходить маршрути за відомою "мертвою" частиною URL і замінює на робочу.
+    /// Безпечно викликати багаторазово — нічого не робить, якщо URL вже виправлено.
+    /// </summary>
+    private static async Task FixBrokenImageUrlsAsync(IServiceProvider services)
+    {
+        var db = services.GetRequiredService<ApplicationDbContext>();
+
+        // (фрагмент мертвого URL, новий URL)
+        var fixes = new[]
+        {
+            ("photo-1599394020900-19c4843a8a93", "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=85&fit=crop&auto=format"),
+        };
+
+        bool changed = false;
+        foreach (var (badFragment, newUrl) in fixes)
+        {
+            var affected = await db.Routes
+                .Where(r => r.ImageUrl != null && r.ImageUrl.Contains(badFragment))
+                .ToListAsync();
+
+            foreach (var r in affected)
+            {
+                r.ImageUrl = newUrl;
+                changed = true;
+            }
+        }
+
+        if (changed) await db.SaveChangesAsync();
+
+        // Виправлення точок маршруту "Каякінг по Десні" — старі координати йшли
+        // по прямій через сушу, не слідуючи течії річки.
+        var desnaRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Каякінг по Десні — Тиха річкова подорож");
+
+        if (desnaRoute != null)
+        {
+            var oldPoints = await db.RoutePoints
+                .Where(p => p.RouteId == desnaRoute.Id)
+                .ToListAsync();
+
+            // Якщо точок менше 4 — старі дані ще не виправлені
+            if (oldPoints.Count < 4)
+            {
+                db.RoutePoints.RemoveRange(oldPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=desnaRoute.Id, Title="Старт — Новгород-Сіверський (пристань)", Latitude=52.0083, Longitude=33.2656, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=desnaRoute.Id, Title="Вигин річки біля с. Пушкарі",            Latitude=51.9930, Longitude=33.2080, PointType=PointType.Checkpoint, OrderIndex=1 },
+                    new RoutePoint { RouteId=desnaRoute.Id, Title="Піщаний пляж біля с. Бирине",            Latitude=51.9700, Longitude=33.1650, PointType=PointType.Highlight,  OrderIndex=2 },
+                    new RoutePoint { RouteId=desnaRoute.Id, Title="Фініш — с. Леньківка",                   Latitude=51.9520, Longitude=33.1180, PointType=PointType.Finish,     OrderIndex=3 }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
+
+        // Виправлення точок маршруту "Велотур Південним Бугом" — старі координати
+        // йшли в напрямку, протилежному течії (Гард розташований південніше Мигії).
+        var bugRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Велотур Південним Бугом — Гранітні каньйони");
+
+        if (bugRoute != null)
+        {
+            var bugPoints = await db.RoutePoints
+                .Where(p => p.RouteId == bugRoute.Id)
+                .ToListAsync();
+
+            // Стара (невірна) середня точка мала Latitude ~47.751
+            var hasOldPoints = bugPoints.Any(p => Math.Abs(p.Latitude - 47.7510) < 0.001);
+            if (hasOldPoints)
+            {
+                db.RoutePoints.RemoveRange(bugPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=bugRoute.Id, Title="Старт — Мигія",     Latitude=47.7270, Longitude=31.0190, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=bugRoute.Id, Title="Гранітні пороги",   Latitude=47.7050, Longitude=31.0080, PointType=PointType.Highlight, OrderIndex=1 },
+                    new RoutePoint { RouteId=bugRoute.Id, Title="Фініш — урочище Гард", Latitude=47.6780, Longitude=30.9950, PointType=PointType.Finish, OrderIndex=2 }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
     }
 }
