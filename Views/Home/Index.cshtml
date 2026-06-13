@@ -52,7 +52,8 @@
         <div class="carousel-item @(i == 0 ? "active" : "")">
           <a asp-controller="Routes" asp-action="Details" asp-route-id="@r.Id" style="text-decoration:none;">
             <div style="position:relative;height:320px;">
-              <img src="@(r.ImageUrl ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&q=80")"
+              <img src="@(r.ImageUrl ?? "/images/route-placeholder.svg")"
+                   onerror="this.onerror=null;this.src='/images/route-placeholder.svg';"
                    alt="@r.Title" style="width:100%;height:100%;object-fit:cover;display:block;"/>
               <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(13,31,18,.85) 0%, transparent 60%);"></div>
               <div style="position:absolute;bottom:24px;left:28px;color:#fff;">
@@ -100,7 +101,9 @@
 
           <!-- Image -->
           <div style="position:relative;height:195px;overflow:hidden;flex-shrink:0;">
-            <img src="@(r.ImageUrl ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80")"
+            <img src="@(r.ImageUrl ?? "/images/route-placeholder.svg")"
+                 onerror="this.onerror=null;this.src='/images/route-placeholder.svg';"
+                 loading="lazy"
                  alt="@r.Title"
                  style="width:100%;height:100%;object-fit:cover;display:block;"/>
             <div style="position:absolute;top:10px;left:10px;z-index:2;">

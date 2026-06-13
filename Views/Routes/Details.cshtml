@@ -7,12 +7,12 @@
   <div class="col-lg-8">
 
     
-    @if (!string.IsNullOrEmpty(Model.ImageUrl)) {
-      <div class="detail-hero mb-4">
-        <img src="@Model.ImageUrl" alt="@Model.Title"/>
-        <span class="badge-difficulty badge-@Model.Difficulty.ToString().ToLower() detail-badge">@Model.Difficulty</span>
-      </div>
-    }
+    <div class="detail-hero mb-4">
+      <img src="@(Model.ImageUrl ?? "/images/route-placeholder.svg")"
+           onerror="this.onerror=null;this.src='/images/route-placeholder.svg';"
+           alt="@Model.Title"/>
+      <span class="badge-difficulty badge-@Model.Difficulty.ToString().ToLower() detail-badge">@Model.Difficulty</span>
+    </div>
 
     <h1 class="detail-title">@Model.Title</h1>
 
