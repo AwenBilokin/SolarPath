@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs><linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fef3c7"/><stop offset="100%" stop-color="#d97706"/>
+  </linearGradient></defs>
+  <rect width="800" height="500" fill="url(#sky4)"/>
+  <circle cx="180" cy="100" r="50" fill="#fff" opacity="0.5"/>
+  <g fill="#78350f" opacity="0.9">
+    <rect x="320" y="160" width="160" height="240"/>
+    <rect x="290" y="120" width="50" height="280"/>
+    <rect x="460" y="120" width="50" height="280"/>
+    <path d="M290 120 L315 80 L340 120 Z"/>
+    <path d="M460 120 L485 80 L510 120 Z"/>
+    <rect x="380" y="280" width="40" height="120" fill="#451a03"/>
+  </g>
+  <rect x="0" y="400" width="800" height="100" fill="#92400e" opacity="0.7"/>
+</svg>
