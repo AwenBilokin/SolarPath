@@ -355,7 +355,9 @@ public static class SeedData
 
         var routes = await db.Routes
             .Where(r => r.ImageUrl != null &&
-                       (r.ImageUrl.StartsWith("/images/routes/") || r.ImageUrl.Contains("source.unsplash.com")))
+                       (r.ImageUrl.StartsWith("/images/routes/")
+                     || r.ImageUrl.Contains("source.unsplash.com")
+                     || r.ImageUrl.Contains("images.unsplash.com")))
             .ToListAsync();
 
         if (routes.Count == 0) return;
