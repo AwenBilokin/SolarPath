@@ -70,11 +70,11 @@ public static class SeedData
             new RoutePoint { RouteId=r3.Id, Title="Фініш — Нирків",          Latitude=48.6050, Longitude=25.8150, PointType=PointType.Finish,     OrderIndex=3 }
         );
 
-        // Точки для Софіївського парку (Умань)
+        // Точки для Софіївського парку (Умань) — вхід за GPS 48°45'23.6"N 30°14'08.3"E
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r2.Id, Title="Вхід до парку",    Latitude=48.7538, Longitude=30.2246, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r2.Id, Title="Острів Анти-Цирці",Latitude=48.7558, Longitude=30.2198, PointType=PointType.Highlight, OrderIndex=1 },
-            new RoutePoint { RouteId=r2.Id, Title="Великий каскад",   Latitude=48.7545, Longitude=30.2230, PointType=PointType.Finish,    OrderIndex=2 }
+            new RoutePoint { RouteId=r2.Id, Title="Головний вхід (Київська вул.)", Latitude=48.7566, Longitude=30.2356, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r2.Id, Title="Острів Анти-Цирцеї",            Latitude=48.7548, Longitude=30.2200, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r2.Id, Title="Великий каскад",                Latitude=48.7530, Longitude=30.2230, PointType=PointType.Finish,    OrderIndex=2 }
         );
         // Точки для Велотуру Закарпаттям
         db.RoutePoints.AddRange(
@@ -466,6 +466,31 @@ public static class SeedData
         {
             zakarpattiaRoute.PricePerPerson = 4800;
             await db.SaveChangesAsync();
+        }
+
+        // Виправлення точок маршруту "Софіївський парк" — старі координати
+        // вказували на сусідні вулиці поза територією парку.
+        var sofiyivkaRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Софіївський парк — Садова казка Умані");
+
+        if (sofiyivkaRoute != null)
+        {
+            var sofiyivkaPoints = await db.RoutePoints
+                .Where(p => p.RouteId == sofiyivkaRoute.Id)
+                .ToListAsync();
+
+            // Стара стартова точка мала Longitude ~30.2246
+            var hasOldPoints = sofiyivkaPoints.Any(p => Math.Abs(p.Longitude - 30.2246) < 0.001);
+            if (hasOldPoints)
+            {
+                db.RoutePoints.RemoveRange(sofiyivkaPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=sofiyivkaRoute.Id, Title="Головний вхід (Київська вул.)", Latitude=48.7566, Longitude=30.2356, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=sofiyivkaRoute.Id, Title="Острів Анти-Цирцеї",            Latitude=48.7548, Longitude=30.2200, PointType=PointType.Highlight, OrderIndex=1 },
+                    new RoutePoint { RouteId=sofiyivkaRoute.Id, Title="Великий каскад",                Latitude=48.7530, Longitude=30.2230, PointType=PointType.Finish,    OrderIndex=2 }
+                );
+                await db.SaveChangesAsync();
+            }
         }
     }
 }
