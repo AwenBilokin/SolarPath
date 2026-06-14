@@ -74,6 +74,7 @@ public class RouteService : IRouteService
 
     public async Task<Models.Route?> GetByIdAsync(int id) =>
         await _db.Routes
+            .AsNoTracking()
             .Include(r => r.Category)
             .Include(r => r.Guide)
             .Include(r => r.Points.OrderBy(p => p.OrderIndex))

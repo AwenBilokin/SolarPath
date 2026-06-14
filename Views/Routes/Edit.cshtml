@@ -180,11 +180,11 @@ var pointTypeValues = {Start:0, Checkpoint:1, Highlight:2, Finish:3};
 
 function renderHiddenFields() {
   var html = points.map(function(pt, i) {
-    return '<input type="hidden" name="Points['+i+'].Latitude" value="'+pt.lat+'">'+
-           '<input type="hidden" name="Points['+i+'].Longitude" value="'+pt.lng+'">'+
-           '<input type="hidden" name="Points['+i+'].Title" value="'+escapeHtml(pt.title)+'">'+
-           '<input type="hidden" name="Points['+i+'].PointType" value="'+(pointTypeValues[pt.type]??0)+'">'+
-           '<input type="hidden" name="Points['+i+'].OrderIndex" value="'+i+'">';
+    return '<input type="hidden" name="RoutePoints['+i+'].Latitude" value="'+pt.lat+'">'+
+           '<input type="hidden" name="RoutePoints['+i+'].Longitude" value="'+pt.lng+'">'+
+           '<input type="hidden" name="RoutePoints['+i+'].Title" value="'+escapeHtml(pt.title)+'">'+
+           '<input type="hidden" name="RoutePoints['+i+'].PointType" value="'+(pointTypeValues[pt.type]??0)+'">'+
+           '<input type="hidden" name="RoutePoints['+i+'].OrderIndex" value="'+i+'">';
   }).join('');
   document.getElementById('hiddenPoints').innerHTML = html;
 }
