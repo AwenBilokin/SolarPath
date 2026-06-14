@@ -52,7 +52,7 @@
       <input type="file" name="image" class="form-control" accept="image/*"/>
     </div>
 
-    {{!-- ── РЕДАКТОР ТОЧОК МАРШРУТУ ──────────────────────────────── --}}
+    
     <div class="col-12">
       <label class="form-label fw-semibold">Точки маршруту</label>
       <p class="text-muted small mb-2">
@@ -60,13 +60,13 @@
         Клікніть на карту, щоб додати точку. Або введіть координати вручну нижче.
       </p>
 
-      {{!-- мінікарта для вибору точок --}}
+      
       <div id="pointPicker" style="height:380px;border-radius:10px;overflow:hidden;border:1px solid #dee2e6;" class="mb-3"></div>
 
-      {{!-- список доданих точок --}}
+      
       <div id="pointsList" class="mb-2"></div>
 
-      {{!-- форма ручного додавання --}}
+      
       <div class="card bg-light p-3 mb-2">
         <div class="row g-2 align-items-end">
           <div class="col-md-3">
@@ -98,7 +98,7 @@
         </div>
       </div>
 
-      {{!-- приховані поля, що відправляться на сервер --}}
+      
       <div id="hiddenPoints"></div>
     </div>
 
@@ -187,15 +187,22 @@ function renderPointsList() {
   document.getElementById('pointsList').innerHTML = html || '<p class="text-muted small">Ще немає точок. Клікніть на карту або введіть вручну.</p>';
 }
 
+// Enum значення для PointType (має збігатись з C# enum)
+var pointTypeValues = {Start:0, Checkpoint:1, Highlight:2, Finish:3};
+
 function renderHiddenFields() {
   var html = points.map(function(pt, i) {
     return '<input type="hidden" name="Points['+i+'].Latitude" value="'+pt.lat+'">'+
            '<input type="hidden" name="Points['+i+'].Longitude" value="'+pt.lng+'">'+
-           '<input type="hidden" name="Points['+i+'].Title" value="'+pt.title+'">'+
-           '<input type="hidden" name="Points['+i+'].PointType" value="'+pt.type+'">'+
+           '<input type="hidden" name="Points['+i+'].Title" value="'+escapeHtml(pt.title)+'">'+
+           '<input type="hidden" name="Points['+i+'].PointType" value="'+(pointTypeValues[pt.type]??0)+'">'+
            '<input type="hidden" name="Points['+i+'].OrderIndex" value="'+i+'">';
   }).join('');
   document.getElementById('hiddenPoints').innerHTML = html;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function updateMapLine() {

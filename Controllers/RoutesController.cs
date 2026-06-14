@@ -97,7 +97,7 @@ public class RoutesController : Controller
     }
 
     [HttpPost, Authorize(Roles = "Guide,Administrator"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Models.Route model, IFormFile? image, List<RoutePoint>? Points)
+    public async Task<IActionResult> Create(Models.Route model, IFormFile? image, List<RoutePointDto>? Points)
     {
         ModelState.Remove("Guide"); ModelState.Remove("Category");
         ModelState.Remove("GuideId");
@@ -117,17 +117,22 @@ public class RoutesController : Controller
             await image.CopyToAsync(fs);
             model.ImageUrl = $"/uploads/{fileName}";
         }
-        await _routeService.CreateAsync(model);
+        // Зберігаємо маршрут — після цього model.Id вже заповнено EF
+        var saved = await _routeService.CreateAsync(model);
 
-        // Зберегти точки маршруту
+        // Зберегти точки маршруту через DTO (без EF-трекінгу)
         if (Points != null && Points.Count > 0)
         {
-            for (int i = 0; i < Points.Count; i++)
+            var routePoints = Points.Select((p, i) => new RoutePoint
             {
-                Points[i].RouteId = model.Id;
-                Points[i].OrderIndex = i;
-                _db.RoutePoints.Add(Points[i]);
-            }
+                RouteId    = saved.Id,
+                Latitude   = p.Latitude,
+                Longitude  = p.Longitude,
+                Title      = p.Title,
+                PointType  = p.PointType,
+                OrderIndex = i
+            }).ToList();
+            _db.RoutePoints.AddRange(routePoints);
             await _db.SaveChangesAsync();
         }
 
@@ -147,7 +152,7 @@ public class RoutesController : Controller
     }
 
     [HttpPost, Authorize(Roles = "Guide,Administrator"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Models.Route model, IFormFile? image, List<RoutePoint>? Points)
+    public async Task<IActionResult> Edit(int id, Models.Route model, IFormFile? image, List<RoutePointDto>? Points)
     {
         var existing = await _db.Routes.FindAsync(id);
         if (existing == null) return NotFound();
@@ -172,19 +177,27 @@ public class RoutesController : Controller
             await image.CopyToAsync(fs);
             existing.ImageUrl = $"/uploads/{fileName}";
         }
+
+        // Видаляємо старі точки ДО UpdateAsync, щоб уникнути EF-конфлікту трекінгу
+        var oldPoints = await _db.RoutePoints.Where(p => p.RouteId == id).ToListAsync();
+        _db.RoutePoints.RemoveRange(oldPoints);
+
+        // Зберігаємо маршрут
         await _routeService.UpdateAsync(existing);
 
-        // Оновити точки маршруту — видалити старі, зберегти нові
+        // Додаємо нові точки через DTO (чисті entity без EF-трекінгу)
         if (Points != null && Points.Count > 0)
         {
-            var oldPoints = _db.RoutePoints.Where(p => p.RouteId == id);
-            _db.RoutePoints.RemoveRange(oldPoints);
-            for (int i = 0; i < Points.Count; i++)
+            var routePoints = Points.Select((p, i) => new RoutePoint
             {
-                Points[i].RouteId = id;
-                Points[i].OrderIndex = i;
-                _db.RoutePoints.Add(Points[i]);
-            }
+                RouteId    = id,
+                Latitude   = p.Latitude,
+                Longitude  = p.Longitude,
+                Title      = p.Title,
+                PointType  = p.PointType,
+                OrderIndex = i
+            }).ToList();
+            _db.RoutePoints.AddRange(routePoints);
             await _db.SaveChangesAsync();
         }
 

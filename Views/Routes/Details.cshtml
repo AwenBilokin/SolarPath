@@ -155,7 +155,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
   {attribution:'© OpenStreetMap'}).addTo(map);
 
 var points = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
-  Model.Points.OrderBy(p => p.OrderIndex)
+  (Model.Points ?? new List<SolarPath.Web.Models.RoutePoint>()).OrderBy(p => p.OrderIndex)
     .Select(p => new { p.Latitude, p.Longitude, p.Title, Type = p.PointType.ToString() })));
 
 // OSRM-профіль за категорією: пішохідні/культурні/гірські -> foot,
