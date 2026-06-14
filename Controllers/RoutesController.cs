@@ -120,7 +120,26 @@ public class RoutesController : Controller
         // Зберігаємо маршрут — після цього model.Id вже заповнено EF
         var saved = await _routeService.CreateAsync(model);
 
-        // Зберегти точки маршруту через DTO (без EF-трекінгу)
+        // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form
+        if ((RoutePoints == null || RoutePoints.Count == 0) && Request.Form.ContainsKey("RoutePoints[0].LatitudeStr"))
+        {
+            RoutePoints = new List<RoutePointDto>();
+            int i = 0;
+            while (Request.Form.ContainsKey($"RoutePoints[{i}].LatitudeStr"))
+            {
+                RoutePoints.Add(new RoutePointDto
+                {
+                    LatitudeStr  = Request.Form[$"RoutePoints[{i}].LatitudeStr"].ToString(),
+                    LongitudeStr = Request.Form[$"RoutePoints[{i}].LongitudeStr"].ToString(),
+                    Title      = Request.Form[$"RoutePoints[{i}].Title"].ToString(),
+                    PointType  = Enum.TryParse<PointType>(Request.Form[$"RoutePoints[{i}].PointType"], out var pt) ? pt : PointType.Checkpoint,
+                    OrderIndex = i
+                });
+                i++;
+            }
+        }
+
+        // Зберегти точки маршруту
         if (RoutePoints != null && RoutePoints.Count > 0)
         {
             var routePoints = RoutePoints.Select((p, i) => new RoutePoint
@@ -185,6 +204,25 @@ public class RoutesController : Controller
 
         // Зберігаємо маршрут
         await _routeService.UpdateAsync(existing);
+
+        // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form
+        if ((RoutePoints == null || RoutePoints.Count == 0) && Request.Form.ContainsKey("RoutePoints[0].LatitudeStr"))
+        {
+            RoutePoints = new List<RoutePointDto>();
+            int i = 0;
+            while (Request.Form.ContainsKey($"RoutePoints[{i}].LatitudeStr"))
+            {
+                RoutePoints.Add(new RoutePointDto
+                {
+                    LatitudeStr  = Request.Form[$"RoutePoints[{i}].LatitudeStr"].ToString(),
+                    LongitudeStr = Request.Form[$"RoutePoints[{i}].LongitudeStr"].ToString(),
+                    Title      = Request.Form[$"RoutePoints[{i}].Title"].ToString(),
+                    PointType  = Enum.TryParse<PointType>(Request.Form[$"RoutePoints[{i}].PointType"], out var pt) ? pt : PointType.Checkpoint,
+                    OrderIndex = i
+                });
+                i++;
+            }
+        }
 
         // Додаємо нові точки
         if (RoutePoints != null && RoutePoints.Count > 0)

@@ -72,14 +72,26 @@ public class RouteService : IRouteService
         };
     }
 
-    public async Task<Models.Route?> GetByIdAsync(int id) =>
-        await _db.Routes
+    public async Task<Models.Route?> GetByIdAsync(int id)
+    {
+        var route = await _db.Routes
             .AsNoTracking()
             .Include(r => r.Category)
             .Include(r => r.Guide)
-            .Include(r => r.Points.OrderBy(p => p.OrderIndex))
             .Include(r => r.Reviews).ThenInclude(rv => rv.Tourist)
             .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (route != null)
+        {
+            route.Points = await _db.Set<RoutePoint>()
+                .AsNoTracking()
+                .Where(p => p.RouteId == id)
+                .OrderBy(p => p.OrderIndex)
+                .ToListAsync();
+        }
+
+        return route;
+    }
 
     public async Task<Models.Route> CreateAsync(Models.Route route)
     {
