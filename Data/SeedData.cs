@@ -101,29 +101,29 @@ public static class SeedData
             new RoutePoint { RouteId=r7.Id, Title="Оглядовий майданчик",          Latitude=48.6120, Longitude=23.6842, PointType=PointType.Highlight, OrderIndex=1 },
             new RoutePoint { RouteId=r7.Id, Title="Озеро Синевир (берег)",        Latitude=48.6167, Longitude=23.6839, PointType=PointType.Finish,    OrderIndex=2 }
         );
-        // Точки для Хотинської фортеці
+        // Точки для Хотинської фортеці — GPS 48.5220, 26.4984 (вул. Незалежності, 32)
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r8.Id, Title="Головна брама",   Latitude=48.5125, Longitude=26.4925, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r8.Id, Title="Дозорна вежа",    Latitude=48.5130, Longitude=26.4930, PointType=PointType.Highlight, OrderIndex=1 },
-            new RoutePoint { RouteId=r8.Id, Title="Оглядовий майданчик над Дністром", Latitude=48.5118, Longitude=26.4940, PointType=PointType.Finish, OrderIndex=2 }
+            new RoutePoint { RouteId=r8.Id, Title="Головна брама",   Latitude=48.5220, Longitude=26.4984, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r8.Id, Title="Дозорна вежа",    Latitude=48.5224, Longitude=26.4990, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r8.Id, Title="Оглядовий майданчик над Дністром", Latitude=48.5216, Longitude=26.4995, PointType=PointType.Finish, OrderIndex=2 }
         );
-        // Точки для Південного Бугу — від Мигії на південь до Гарду (за течією парку Бузький Гард)
+        // Точки для Південного Бугу — Мигія (48.0391,30.9542) до Грушівки (48.0223,30.9399), НПП Бузький Гард
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r9.Id, Title="Старт — Мигія",     Latitude=47.7270, Longitude=31.0190, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r9.Id, Title="Гранітні пороги",   Latitude=47.7050, Longitude=31.0080, PointType=PointType.Highlight, OrderIndex=1 },
-            new RoutePoint { RouteId=r9.Id, Title="Фініш — урочище Гард", Latitude=47.6780, Longitude=30.9950, PointType=PointType.Finish, OrderIndex=2 }
+            new RoutePoint { RouteId=r9.Id, Title="Старт — Мигія",     Latitude=48.0391, Longitude=30.9542, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r9.Id, Title="Гранітні пороги",   Latitude=48.0310, Longitude=30.9470, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r9.Id, Title="Фініш — урочище Гард (Грушівка)", Latitude=48.0223, Longitude=30.9399, PointType=PointType.Finish, OrderIndex=2 }
         );
-        // Точки для сплаву по Стрию
+        // Точки для сплаву по Стрию — від Верхнього (49.0988,23.5908) до Нижнього Синьовидного, вздовж р.Стрий
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r10.Id, Title="Старт — Верхнє Синьовидне", Latitude=49.0640, Longitude=23.4870, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r10.Id, Title="Найскладніший порід",       Latitude=49.0780, Longitude=23.4990, PointType=PointType.Checkpoint, OrderIndex=1 },
-            new RoutePoint { RouteId=r10.Id, Title="Фініш — Нижнє Синьовидне",  Latitude=49.0920, Longitude=23.5110, PointType=PointType.Finish,    OrderIndex=2 }
+            new RoutePoint { RouteId=r10.Id, Title="Старт — Верхнє Синьовидне", Latitude=49.0988, Longitude=23.5908, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r10.Id, Title="Найскладніший порід",       Latitude=49.0820, Longitude=23.5700, PointType=PointType.Checkpoint, OrderIndex=1 },
+            new RoutePoint { RouteId=r10.Id, Title="Фініш — Нижнє Синьовидне",  Latitude=49.0650, Longitude=23.5450, PointType=PointType.Finish,    OrderIndex=2 }
         );
-        // Точки для Тунелю кохання
+        // Точки для Тунелю кохання — GPS 50.7506, 26.0440 (біля ж/д вокзалу Клевань, вздовж колії на Оржів)
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r11.Id, Title="Початок тунелю", Latitude=50.7295, Longitude=26.0125, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r11.Id, Title="Середина тунелю — найгустіша зелень", Latitude=50.7310, Longitude=26.0145, PointType=PointType.Highlight, OrderIndex=1 },
-            new RoutePoint { RouteId=r11.Id, Title="Кінець тунелю", Latitude=50.7325, Longitude=26.0165, PointType=PointType.Finish,    OrderIndex=2 }
+            new RoutePoint { RouteId=r11.Id, Title="Початок тунелю (біля вокзалу)",  Latitude=50.7506, Longitude=26.0440, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r11.Id, Title="Середина тунелю — найгустіша зелень", Latitude=50.7530, Longitude=26.0480, PointType=PointType.Highlight, OrderIndex=1 },
+            new RoutePoint { RouteId=r11.Id, Title="Кінець тунелю (в напрямку Оржева)", Latitude=50.7555, Longitude=26.0520, PointType=PointType.Finish,    OrderIndex=2 }
         );
         // Точки для Львова
         db.RoutePoints.AddRange(
@@ -132,11 +132,11 @@ public static class SeedData
             new RoutePoint { RouteId=r12.Id, Title="Підземелля бернардинського монастиря", Latitude=49.8400, Longitude=24.0345, PointType=PointType.Highlight, OrderIndex=2 },
             new RoutePoint { RouteId=r12.Id, Title="Високий Замок",      Latitude=49.8470, Longitude=24.0395, PointType=PointType.Finish,    OrderIndex=3 }
         );
-        // Точки для Бескидів (Парашка)
+        // Точки для Бескидів (Парашка) — вершина GPS 49.0715, 23.4135, ~8км на північний захід від Сколе (49.034, 23.513)
         db.RoutePoints.AddRange(
-            new RoutePoint { RouteId=r13.Id, Title="Старт — Сколе",        Latitude=49.0530, Longitude=23.5780, PointType=PointType.Start,     OrderIndex=0 },
-            new RoutePoint { RouteId=r13.Id, Title="Полонина",              Latitude=49.0680, Longitude=23.5920, PointType=PointType.Checkpoint, OrderIndex=1 },
-            new RoutePoint { RouteId=r13.Id, Title="Вершина Парашка 1268м", Latitude=49.0750, Longitude=23.6010, PointType=PointType.Finish,    OrderIndex=2 }
+            new RoutePoint { RouteId=r13.Id, Title="Старт — Сколе",        Latitude=49.0400, Longitude=23.4900, PointType=PointType.Start,     OrderIndex=0 },
+            new RoutePoint { RouteId=r13.Id, Title="Полонина",              Latitude=49.0560, Longitude=23.4500, PointType=PointType.Checkpoint, OrderIndex=1 },
+            new RoutePoint { RouteId=r13.Id, Title="Вершина Парашка 1268м", Latitude=49.0715, Longitude=23.4135, PointType=PointType.Finish,    OrderIndex=2 }
         );
         // Точки для Буковини
         db.RoutePoints.AddRange(
@@ -223,9 +223,9 @@ public static class SeedData
             ("Велотур Південним Бугом — Гранітні каньйони",
              new RouteModel { Title="Велотур Південним Бугом — Гранітні каньйони", Description="Маршрут вздовж порогів і гранітних скель Південного Бугу через Мигію та Гард. Краєвиди, що нагадують Скандинавію — ідеально для любителів активного відпочинку на природі.", Difficulty=DifficultyLevel.Medium, DistanceKm=42.0, DurationMinutes=300, MaxParticipants=12, AvailableSlots=12, PricePerPerson=750, SeasonStart=new DateTime(2025,4,15), SeasonEnd=new DateTime(2025,10,15), RouteStatus=RouteStatus.Published, CategoryId=2, GuideId=guide.Id, ImageUrl=null, CreatedAt=DateTime.UtcNow.AddDays(-6) },
              new[] {
-                new RoutePoint { Title="Старт — Мигія",     Latitude=47.7270, Longitude=31.0190, PointType=PointType.Start,     OrderIndex=0 },
-                new RoutePoint { Title="Гранітні пороги",   Latitude=47.7050, Longitude=31.0080, PointType=PointType.Highlight, OrderIndex=1 },
-                new RoutePoint { Title="Фініш — урочище Гард", Latitude=47.6780, Longitude=30.9950, PointType=PointType.Finish, OrderIndex=2 }
+                new RoutePoint { Title="Старт — Мигія",     Latitude=48.0391, Longitude=30.9542, PointType=PointType.Start,     OrderIndex=0 },
+                new RoutePoint { Title="Гранітні пороги",   Latitude=48.0310, Longitude=30.9470, PointType=PointType.Highlight, OrderIndex=1 },
+                new RoutePoint { Title="Фініш — урочище Гард (Грушівка)", Latitude=48.0223, Longitude=30.9399, PointType=PointType.Finish, OrderIndex=2 }
              },
              null),
 
@@ -377,7 +377,7 @@ public static class SeedData
         }
 
         // Виправлення точок маршруту "Велотур Південним Бугом" — старі координати
-        // йшли в напрямку, протилежному течії (Гард розташований південніше Мигії).
+        // були зсунуті на ~35км (Мигія/Грушівка насправді біля 48.03, 30.95).
         var bugRoute = await db.Routes
             .FirstOrDefaultAsync(r => r.Title == "Велотур Південним Бугом — Гранітні каньйони");
 
@@ -387,15 +387,15 @@ public static class SeedData
                 .Where(p => p.RouteId == bugRoute.Id)
                 .ToListAsync();
 
-            // Стара (невірна) середня точка мала Latitude ~47.751
-            var hasOldPoints = bugPoints.Any(p => Math.Abs(p.Latitude - 47.7510) < 0.001);
-            if (hasOldPoints)
+            // Правильна стартова точка має Latitude ~48.0391; якщо її ще нема — оновлюємо
+            var hasCorrectPoints = bugPoints.Any(p => Math.Abs(p.Latitude - 48.0391) < 0.001);
+            if (!hasCorrectPoints && bugPoints.Count > 0)
             {
                 db.RoutePoints.RemoveRange(bugPoints);
                 db.RoutePoints.AddRange(
-                    new RoutePoint { RouteId=bugRoute.Id, Title="Старт — Мигія",     Latitude=47.7270, Longitude=31.0190, PointType=PointType.Start,     OrderIndex=0 },
-                    new RoutePoint { RouteId=bugRoute.Id, Title="Гранітні пороги",   Latitude=47.7050, Longitude=31.0080, PointType=PointType.Highlight, OrderIndex=1 },
-                    new RoutePoint { RouteId=bugRoute.Id, Title="Фініш — урочище Гард", Latitude=47.6780, Longitude=30.9950, PointType=PointType.Finish, OrderIndex=2 }
+                    new RoutePoint { RouteId=bugRoute.Id, Title="Старт — Мигія",     Latitude=48.0391, Longitude=30.9542, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=bugRoute.Id, Title="Гранітні пороги",   Latitude=48.0310, Longitude=30.9470, PointType=PointType.Highlight, OrderIndex=1 },
+                    new RoutePoint { RouteId=bugRoute.Id, Title="Фініш — урочище Гард (Грушівка)", Latitude=48.0223, Longitude=30.9399, PointType=PointType.Finish, OrderIndex=2 }
                 );
                 await db.SaveChangesAsync();
             }
@@ -488,6 +488,102 @@ public static class SeedData
                     new RoutePoint { RouteId=sofiyivkaRoute.Id, Title="Головний вхід (Київська вул.)", Latitude=48.7566, Longitude=30.2356, PointType=PointType.Start,     OrderIndex=0 },
                     new RoutePoint { RouteId=sofiyivkaRoute.Id, Title="Острів Анти-Цирцеї",            Latitude=48.7548, Longitude=30.2200, PointType=PointType.Highlight, OrderIndex=1 },
                     new RoutePoint { RouteId=sofiyivkaRoute.Id, Title="Великий каскад",                Latitude=48.7530, Longitude=30.2230, PointType=PointType.Finish,    OrderIndex=2 }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
+
+        // Виправлення "Тунель кохання" — старі координати були зсунуті на ~2.5км
+        // (реальна локація біля ж/д вокзалу Клевань: 50.7506, 26.0440)
+        var tunnelRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Тунель кохання — Клевань");
+
+        if (tunnelRoute != null)
+        {
+            var tunnelPoints = await db.RoutePoints
+                .Where(p => p.RouteId == tunnelRoute.Id)
+                .ToListAsync();
+
+            var hasCorrect = tunnelPoints.Any(p => Math.Abs(p.Latitude - 50.7506) < 0.001);
+            if (!hasCorrect && tunnelPoints.Count > 0)
+            {
+                db.RoutePoints.RemoveRange(tunnelPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=tunnelRoute.Id, Title="Початок тунелю (біля вокзалу)",  Latitude=50.7506, Longitude=26.0440, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=tunnelRoute.Id, Title="Середина тунелю — найгустіша зелень", Latitude=50.7530, Longitude=26.0480, PointType=PointType.Highlight, OrderIndex=1 },
+                    new RoutePoint { RouteId=tunnelRoute.Id, Title="Кінець тунелю (в напрямку Оржева)", Latitude=50.7555, Longitude=26.0520, PointType=PointType.Finish,    OrderIndex=2 }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
+
+        // Виправлення "Хотинська фортеця" — старі координати були зсунуті на ~1.5км
+        // (реальна локація: 48.5220, 26.4984)
+        var khotynRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Хотинська фортеця — Сторожа Дністра");
+
+        if (khotynRoute != null)
+        {
+            var khotynPoints = await db.RoutePoints
+                .Where(p => p.RouteId == khotynRoute.Id)
+                .ToListAsync();
+
+            var hasCorrect = khotynPoints.Any(p => Math.Abs(p.Latitude - 48.5220) < 0.001);
+            if (!hasCorrect && khotynPoints.Count > 0)
+            {
+                db.RoutePoints.RemoveRange(khotynPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=khotynRoute.Id, Title="Головна брама",   Latitude=48.5220, Longitude=26.4984, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=khotynRoute.Id, Title="Дозорна вежа",    Latitude=48.5224, Longitude=26.4990, PointType=PointType.Highlight, OrderIndex=1 },
+                    new RoutePoint { RouteId=khotynRoute.Id, Title="Оглядовий майданчик над Дністром", Latitude=48.5216, Longitude=26.4995, PointType=PointType.Finish, OrderIndex=2 }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
+
+        // Виправлення "Бескиди — Парашка" — старі координати були зсунуті на ~12км
+        // (реальна вершина: 49.0715, 23.4135, Сколе: 49.034, 23.513)
+        var parashkaRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Бескиди — Хребтова стежка Парашки");
+
+        if (parashkaRoute != null)
+        {
+            var parashkaPoints = await db.RoutePoints
+                .Where(p => p.RouteId == parashkaRoute.Id)
+                .ToListAsync();
+
+            var hasCorrect = parashkaPoints.Any(p => Math.Abs(p.Longitude - 23.4135) < 0.001);
+            if (!hasCorrect && parashkaPoints.Count > 0)
+            {
+                db.RoutePoints.RemoveRange(parashkaPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=parashkaRoute.Id, Title="Старт — Сколе",        Latitude=49.0400, Longitude=23.4900, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=parashkaRoute.Id, Title="Полонина",              Latitude=49.0560, Longitude=23.4500, PointType=PointType.Checkpoint, OrderIndex=1 },
+                    new RoutePoint { RouteId=parashkaRoute.Id, Title="Вершина Парашка 1268м", Latitude=49.0715, Longitude=23.4135, PointType=PointType.Finish,    OrderIndex=2 }
+                );
+                await db.SaveChangesAsync();
+            }
+        }
+
+        // Виправлення "Сплав по Стрию" — старі координати були зсунуті на ~10км
+        // (Верхнє Синьовидне: 49.0988, 23.5908)
+        var stryiRoute = await db.Routes
+            .FirstOrDefaultAsync(r => r.Title == "Сплав по Стрию — Карпатська течія");
+
+        if (stryiRoute != null)
+        {
+            var stryiPoints = await db.RoutePoints
+                .Where(p => p.RouteId == stryiRoute.Id)
+                .ToListAsync();
+
+            var hasCorrect = stryiPoints.Any(p => Math.Abs(p.Latitude - 49.0988) < 0.001);
+            if (!hasCorrect && stryiPoints.Count > 0)
+            {
+                db.RoutePoints.RemoveRange(stryiPoints);
+                db.RoutePoints.AddRange(
+                    new RoutePoint { RouteId=stryiRoute.Id, Title="Старт — Верхнє Синьовидне", Latitude=49.0988, Longitude=23.5908, PointType=PointType.Start,     OrderIndex=0 },
+                    new RoutePoint { RouteId=stryiRoute.Id, Title="Найскладніший порід",       Latitude=49.0820, Longitude=23.5700, PointType=PointType.Checkpoint, OrderIndex=1 },
+                    new RoutePoint { RouteId=stryiRoute.Id, Title="Фініш — Нижнє Синьовидне",  Latitude=49.0650, Longitude=23.5450, PointType=PointType.Finish,    OrderIndex=2 }
                 );
                 await db.SaveChangesAsync();
             }

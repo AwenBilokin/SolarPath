@@ -97,7 +97,7 @@ public class RoutesController : Controller
     }
 
     [HttpPost, Authorize(Roles = "Guide,Administrator"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Models.Route model, IFormFile? image)
+    public async Task<IActionResult> Create(Models.Route model, IFormFile? image, List<RoutePoint>? Points)
     {
         ModelState.Remove("Guide"); ModelState.Remove("Category");
         ModelState.Remove("GuideId");
@@ -118,6 +118,19 @@ public class RoutesController : Controller
             model.ImageUrl = $"/uploads/{fileName}";
         }
         await _routeService.CreateAsync(model);
+
+        // Зберегти точки маршруту
+        if (Points != null && Points.Count > 0)
+        {
+            for (int i = 0; i < Points.Count; i++)
+            {
+                Points[i].RouteId = model.Id;
+                Points[i].OrderIndex = i;
+                _db.RoutePoints.Add(Points[i]);
+            }
+            await _db.SaveChangesAsync();
+        }
+
         TempData["Success"] = "Маршрут успішно створено!";
         return RedirectToAction(nameof(Index));
     }
@@ -134,7 +147,7 @@ public class RoutesController : Controller
     }
 
     [HttpPost, Authorize(Roles = "Guide,Administrator"), ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Models.Route model, IFormFile? image)
+    public async Task<IActionResult> Edit(int id, Models.Route model, IFormFile? image, List<RoutePoint>? Points)
     {
         var existing = await _db.Routes.FindAsync(id);
         if (existing == null) return NotFound();
@@ -160,6 +173,21 @@ public class RoutesController : Controller
             existing.ImageUrl = $"/uploads/{fileName}";
         }
         await _routeService.UpdateAsync(existing);
+
+        // Оновити точки маршруту — видалити старі, зберегти нові
+        if (Points != null && Points.Count > 0)
+        {
+            var oldPoints = _db.RoutePoints.Where(p => p.RouteId == id);
+            _db.RoutePoints.RemoveRange(oldPoints);
+            for (int i = 0; i < Points.Count; i++)
+            {
+                Points[i].RouteId = id;
+                Points[i].OrderIndex = i;
+                _db.RoutePoints.Add(Points[i]);
+            }
+            await _db.SaveChangesAsync();
+        }
+
         TempData["Success"] = "Маршрут оновлено!";
         return RedirectToAction(nameof(Index));
     }
