@@ -197,12 +197,13 @@ public class RoutesController : Controller
             existing.ImageUrl = $"/uploads/{fileName}";
         }
 
-        // Видаляємо старі точки ДО UpdateAsync
+        // Видаляємо старі точки
         var oldPoints = await _db.RoutePoints.Where(p => p.RouteId == id).ToListAsync();
         _db.RoutePoints.RemoveRange(oldPoints);
         await _db.SaveChangesAsync();
 
-        // Зберігаємо маршрут
+        // Зберігаємо маршрут (без Points щоб EF не скидав колекцію)
+        existing.Points = new List<RoutePoint>();
         await _routeService.UpdateAsync(existing);
 
         // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form

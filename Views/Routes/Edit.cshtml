@@ -177,14 +177,14 @@ function renderPointsList() {
   document.getElementById('pointsList').innerHTML = html || '<p class="text-muted small">Ще немає точок.</p>';
 }
 
-var pointTypeValues = {Start:0, Checkpoint:1, Highlight:2, Finish:3};
+var pointTypeValues = {Start:"Start", Checkpoint:"Checkpoint", Highlight:"Highlight", Finish:"Finish"};
 
 function renderHiddenFields() {
   var html = points.map(function(pt, i) {
     return '<input type="hidden" name="RoutePoints['+i+'].LatitudeStr" value="'+pt.lat+'">'+
            '<input type="hidden" name="RoutePoints['+i+'].LongitudeStr" value="'+pt.lng+'">'+
            '<input type="hidden" name="RoutePoints['+i+'].Title" value="'+escapeHtml(pt.title)+'">'+
-           '<input type="hidden" name="RoutePoints['+i+'].PointType" value="'+(pointTypeValues[pt.type]??0)+'">'+
+           '<input type="hidden" name="RoutePoints['+i+'].PointType" value="'+(pointTypeValues[pt.type]??'Checkpoint')+'">'+
            '<input type="hidden" name="RoutePoints['+i+'].OrderIndex" value="'+i+'">';
   }).join('');
   document.getElementById('hiddenPoints').innerHTML = html;
