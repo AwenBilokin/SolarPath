@@ -839,6 +839,13 @@ main.container { padding-top: 28px; padding-bottom: 48px; }
   font-size: .82rem;
   color: #9ca3af;
 }
-@media (max-width: 576px) {
-  .sp-search-panel { width: 90vw; left: -54px; }
+@media (max-width: 991px) {
+  .sp-search-panel {
+    position: fixed;
+    top: 62px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    z-index: 1080;
+  }
 }
