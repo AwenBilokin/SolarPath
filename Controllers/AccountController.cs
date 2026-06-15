@@ -52,4 +52,6 @@ public class AccountController : Controller
         await _signInManager.SignOutAsync();
         return RedirectToAction("Index", "Home");
     }
+
+    public IActionResult AccessDenied() => View();
 }

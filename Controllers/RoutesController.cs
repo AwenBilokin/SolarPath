@@ -176,10 +176,12 @@ public class RoutesController : Controller
         var existing = await _db.Routes.FindAsync(id);
         if (existing == null) return NotFound();
         ModelState.Remove("Guide"); ModelState.Remove("Category"); ModelState.Remove("Points"); ModelState.Remove("RoutePoints");
+        ModelState.Remove("AvailableSlots"); ModelState.Remove("GuideId"); ModelState.Remove("CreatedAt");
         if (!ModelState.IsValid)
         {
             ViewBag.Categories = new SelectList(await _db.Categories.ToListAsync(), "Id", "Name");
-            return View(model);
+            var routeWithPoints = await _routeService.GetByIdAsync(id);
+            return View(routeWithPoints);
         }
         existing.Title = model.Title; existing.Description = model.Description;
         existing.Difficulty = model.Difficulty; existing.DistanceKm = model.DistanceKm;
@@ -201,10 +203,6 @@ public class RoutesController : Controller
         var oldPoints = await _db.RoutePoints.Where(p => p.RouteId == id).ToListAsync();
         _db.RoutePoints.RemoveRange(oldPoints);
         await _db.SaveChangesAsync();
-
-        // Зберігаємо маршрут (без Points щоб EF не скидав колекцію)
-        existing.Points = new List<RoutePoint>();
-        await _routeService.UpdateAsync(existing);
 
         // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form
         if ((RoutePoints == null || RoutePoints.Count == 0) && Request.Form.ContainsKey("RoutePoints[0].LatitudeStr"))
@@ -240,6 +238,9 @@ public class RoutesController : Controller
             _db.RoutePoints.AddRange(newPoints);
             await _db.SaveChangesAsync();
         }
+
+        // Зберігаємо зміни маршруту після точок
+        await _db.SaveChangesAsync();
 
         TempData["Success"] = "Маршрут оновлено!";
         return RedirectToAction("Dashboard", "Guide");

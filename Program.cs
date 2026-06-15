@@ -22,7 +22,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(opts => opts.LoginPath = "/Account/Login");
+builder.Services.ConfigureApplicationCookie(opts => {
+    opts.LoginPath = "/Account/Login";
+    opts.AccessDeniedPath = "/Account/AccessDenied";
+});
 
 builder.Services.AddScoped<IRouteService,   RouteService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
