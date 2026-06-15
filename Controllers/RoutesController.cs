@@ -155,8 +155,8 @@ public class RoutesController : Controller
             await _db.SaveChangesAsync();
         }
 
-        TempData["Success"] = "Маршрут успішно створено!";
-        return RedirectToAction(nameof(Index));
+        TempData["Success"] = "Маршрут успішно створено! Опублікуйте його, щоб туристи могли його побачити.";
+        return RedirectToAction("Dashboard", "Guide");
     }
 
     [Authorize(Roles = "Guide,Administrator")]
@@ -241,6 +241,6 @@ public class RoutesController : Controller
         }
 
         TempData["Success"] = "Маршрут оновлено!";
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction("Dashboard", "Guide");
     }
 }
