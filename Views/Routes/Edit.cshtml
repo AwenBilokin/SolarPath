@@ -113,6 +113,9 @@ var existingPoints = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
     .OrderBy(p => p.OrderIndex)
     .Select(p => new { lat = p.Latitude, lng = p.Longitude, title = p.Title, type = p.PointType.ToString() })));
 
+console.log('[SolarPath Debug] existingPoints:', JSON.stringify(existingPoints));
+console.log('[SolarPath Debug] count:', existingPoints.length);
+
 existingPoints.forEach(p => addPoint(p, false));
 if (points.length > 0) {
   var bounds = L.latLngBounds(points.map(p => [p.lat, p.lng]));
