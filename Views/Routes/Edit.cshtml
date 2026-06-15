@@ -125,8 +125,11 @@ existingPoints = existingPoints.map(function(p) {
 
 map.on('click', function(e) {
   var nextType = points.length === 0 ? 'Start' : 'Checkpoint';
-  addPoint({ lat: e.latlng.lat.toFixed(6), lng: e.latlng.lng.toFixed(6),
-             title: nextType === 'Start' ? 'Старт' : 'Точка ' + (points.length + 1), type: nextType });
+  var defaultTitle = nextType === 'Start' ? 'Старт' : 'Точка ' + (points.length + 1);
+  addPoint({ lat: e.latlng.lat.toFixed(6), lng: e.latlng.lng.toFixed(6), title: defaultTitle, type: nextType });
+  // Відкрити popup для редагування щойно доданої точки
+  var idx = points.length - 1;
+  setTimeout(function() { openEditPopup(idx); }, 50);
 });
 
 function addPointManual() {
@@ -141,15 +144,57 @@ function addPointManual() {
   document.getElementById('pt-title').value = '';
 }
 
-function addPoint(pt, updateView) {
-  if (updateView === undefined) updateView = true;
-  points.push(pt);
-  var color = pt.type === 'Start' ? '#16a34a' : pt.type === 'Finish' ? '#dc2626' : '#2563eb';
-  var icon = L.divIcon({
-    html: '<div style="width:14px;height:14px;border-radius:50%;background:'+color+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);"></div>',
+function markerColor(type) {
+  return type === 'Start' ? '#16a34a' : type === 'Finish' ? '#dc2626' : type === 'Highlight' ? '#d97706' : '#2563eb';
+}
+
+function markerIcon(type) {
+  return L.divIcon({
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:'+markerColor(type)+';border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);"></div>',
     iconSize:[14,14], iconAnchor:[7,7], className:''
   });
-  var marker = L.marker([pt.lat, pt.lng], {icon}).bindPopup('<b>'+pt.title+'</b><br><small>'+pt.type+'</small>').addTo(map);
+}
+
+function openEditPopup(idx) {
+  var pt = points[idx];
+  var popupHtml =
+    '<div style="min-width:200px;font-size:13px;">' +
+    '<div style="font-weight:600;margin-bottom:6px;">Редагувати точку</div>' +
+    '<input id="ep-title" value="'+pt.title.replace(/"/g,'&quot;')+'" placeholder="Назва" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;margin-bottom:6px;font-size:13px;">' +
+    '<select id="ep-type" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;margin-bottom:8px;font-size:13px;">' +
+    ['Start','Checkpoint','Highlight','Finish'].map(function(t) {
+      return '<option value="'+t+'"'+(pt.type===t?' selected':'')+'>'+typeLabels[t]+'</option>';
+    }).join('') +
+    '</select>' +
+    '<div style="display:flex;gap:6px;">' +
+    '<button onclick="applyEditPopup('+idx+')" style="flex:1;background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 0;cursor:pointer;font-size:12px;">✓ Зберегти</button>' +
+    '<button onclick="removePoint('+idx+');map.closePopup();" style="flex:1;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:5px 0;cursor:pointer;font-size:12px;">✕ Видалити</button>' +
+    '</div></div>';
+  markers[idx].unbindPopup().bindPopup(popupHtml, {maxWidth:240}).openPopup();
+}
+
+function applyEditPopup(idx) {
+  var newTitle = document.getElementById('ep-title').value.trim() || points[idx].title;
+  var newType  = document.getElementById('ep-type').value;
+  points[idx].title = newTitle;
+  points[idx].type  = newType;
+  markers[idx].setIcon(markerIcon(newType));
+  map.closePopup();
+  renderPointsList();
+  renderHiddenFields();
+  updateMapLine();
+}
+
+function addPoint(pt, updateView) {
+  if (updateView === undefined) updateView = true;
+  var idx = points.length;
+  points.push(pt);
+  var marker = L.marker([pt.lat, pt.lng], {icon: markerIcon(pt.type)})
+    .on('click', function(e) {
+      L.DomEvent.stopPropagation(e);
+      openEditPopup(markers.indexOf(this));
+    })
+    .addTo(map);
   markers.push(marker);
   renderPointsList();
   renderHiddenFields();
@@ -175,7 +220,8 @@ function renderPointsList() {
       '<span class="badge bg-'+typeColors[pt.type]+' text-nowrap">'+typeLabels[pt.type]+'</span>' +
       '<span class="flex-grow-1 small fw-semibold">'+pt.title+'</span>' +
       '<span class="text-muted small font-monospace">'+pt.lat+', '+pt.lng+'</span>' +
-      '<button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="removePoint('+i+')"><i class="bi bi-trash"></i></button>' +
+      '<button type="button" class="btn btn-outline-secondary btn-sm py-0 px-1" onclick="openEditPopup('+i+')" title="Редагувати"><i class="bi bi-pencil"></i></button>' +
+      '<button type="button" class="btn btn-outline-danger btn-sm py-0 px-1" onclick="removePoint('+i+')" title="Видалити"><i class="bi bi-trash"></i></button>' +
     '</div>';
   }).join('');
   document.getElementById('pointsList').innerHTML = html || '<p class="text-muted small">Ще немає точок.</p>';
