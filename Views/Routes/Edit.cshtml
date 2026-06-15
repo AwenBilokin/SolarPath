@@ -116,6 +116,13 @@ var existingPoints = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
 console.log('[SolarPath Debug] existingPoints:', JSON.stringify(existingPoints));
 console.log('[SolarPath Debug] count:', existingPoints.length);
 
+// Нормалізуємо type — може прийти як число (0,1,2,3) або рядок ('Start',...)
+var typeByIndex = ['Start','Checkpoint','Highlight','Finish'];
+existingPoints = existingPoints.map(function(p) {
+  if (typeof p.type === 'number') p.type = typeByIndex[p.type] || 'Checkpoint';
+  return p;
+});
+
 existingPoints.forEach(p => addPoint(p, false));
 if (points.length > 0) {
   var bounds = L.latLngBounds(points.map(p => [p.lat, p.lng]));
