@@ -71,7 +71,7 @@
                        loading="lazy"
                        alt="@r.Title" style="width:100%;height:100%;object-fit:cover;display:block;"/>
                   <div style="position:absolute;top:10px;left:10px;z-index:2;">
-                    <span class="badge-difficulty badge-@r.Difficulty.ToString().ToLower()">@r.Difficulty</span>
+                    <span class="badge-difficulty badge-@r.Difficulty.ToString().ToLower()">@UkHelper.DifficultyUk(r.Difficulty)</span>
                   </div>
                 </div>
 

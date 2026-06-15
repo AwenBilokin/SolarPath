@@ -186,12 +186,24 @@
                     BookingStatus.Refunded   => ("#f3e8ff","#7c3aed"),
                     _                        => ("#f3f4f6","#6b7280")
                   };
+                  var statusUk = b.BookingStatus switch {
+                    BookingStatus.Pending          => "Очікує",
+                    BookingStatus.Paid             => "Оплачено",
+                    BookingStatus.Confirmed        => "Підтверджено",
+                    BookingStatus.InProgress       => "В процесі",
+                    BookingStatus.Completed        => "Завершено",
+                    BookingStatus.Cancelled        => "Скасовано",
+                    BookingStatus.CancelledByGuide => "Скасовано гідом",
+                    BookingStatus.RefundRequested  => "Запит повернення",
+                    BookingStatus.Refunded         => "Повернено",
+                    _                              => b.BookingStatus.ToString()
+                  };
                   <tr style="border-bottom:1px solid #f9fafb;">
                     <td style="padding:7px 8px;color:#9ca3af;">@b.Id</td>
                     <td style="padding:7px 8px;color:#374151;font-weight:500;">@b.Tourist.FullName</td>
                     <td style="padding:7px 8px;color:#374151;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@b.Route.Title</td>
                     <td style="padding:7px 8px;text-align:center;">
-                      <span style="background:@bg;color:@fg;border-radius:20px;padding:2px 9px;font-size:.72rem;font-weight:600;white-space:nowrap;">@b.BookingStatus</span>
+                      <span style="background:@bg;color:@fg;border-radius:20px;padding:2px 9px;font-size:.72rem;font-weight:600;white-space:nowrap;">@statusUk</span>
                     </td>
                     <td style="padding:7px 8px;text-align:right;font-weight:700;color:#1a2e1f;">@(b.TotalPrice.ToString("N0")) ₴</td>
                   </tr>
@@ -275,17 +287,27 @@
   const sLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(statusLabels));
   const sCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(statusCounts));
 
-  const palette = [
-    '#16a34a','#1d4ed8','#0369a1','#f59e0b',
-    '#ef4444','#dc2626','#7c3aed','#6b7280','#10b981'
-  ];
+  const ukStatus = {
+    'Pending':'Очікує','Paid':'Оплачено','Confirmed':'Підтверджено',
+    'InProgress':'В процесі','Completed':'Завершено',
+    'Cancelled':'Скасовано','CancelledByGuide':'Скасовано гідом',
+    'RefundRequested':'Запит повернення','Refunded':'Повернено'
+  };
+  const statusColorMap = {
+    'Pending':'#f59e0b','Paid':'#1d4ed8','Confirmed':'#0369a1',
+    'InProgress':'#16a34a','Completed':'#10b981',
+    'Cancelled':'#ef4444','CancelledByGuide':'#dc2626',
+    'RefundRequested':'#f97316','Refunded':'#7c3aed'
+  };
+  const sLabelsUk = sLabels.map(l => ukStatus[l] || l);
+  const sColors = sLabels.map(l => statusColorMap[l] || '#6b7280');
   new Chart(document.getElementById('statusChart'), {
     type: 'doughnut',
     data: {
-      labels: sLabels,
+      labels: sLabelsUk,
       datasets: [{
         data: sCounts,
-        backgroundColor: palette.slice(0, sLabels.length),
+        backgroundColor: sColors,
         borderWidth: 2,
         borderColor: '#fff'
       }]

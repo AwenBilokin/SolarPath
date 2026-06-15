@@ -6,6 +6,7 @@ using Stripe;
 using Stripe.Checkout;
 using SolarPath.Web.Data;
 using SolarPath.Web.Models;
+using SolarPath.Web.Services;
 
 namespace SolarPath.Web.Controllers;
 
@@ -16,12 +17,14 @@ public class PaymentController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IConfiguration _config;
     private readonly ILogger<PaymentController> _logger;
+    private readonly INotificationService _notificationService;
 
     public PaymentController(ApplicationDbContext db,
         UserManager<ApplicationUser> um,
         IConfiguration config,
-        ILogger<PaymentController> logger)
-    { _db = db; _userManager = um; _config = config; _logger = logger; }
+        ILogger<PaymentController> logger,
+        INotificationService notificationService)
+    { _db = db; _userManager = um; _config = config; _logger = logger; _notificationService = notificationService; }
 
     [HttpPost, Authorize(Roles = "Tourist"), ValidateAntiForgeryToken]
     public async Task<IActionResult> Checkout(int routeId, string scheduledDate, int participantsCount)
@@ -170,7 +173,8 @@ public class PaymentController : Controller
                     PaidAt               = DateTime.UtcNow
                 });
                 await _db.SaveChangesAsync();
-                TempData["Success"] = "Оплату успішно прийнято! Очікуйте підтвердження гіда.";
+                await _notificationService.SendPaymentReceiptAsync(bookingId);
+                TempData["Success"] = "Оплату успішно прийнято! Квитанцію надіслано на email. Очікуйте підтвердження гіда.";
             }
             else
             {

@@ -708,6 +708,7 @@ main.container { padding-top: 28px; padding-bottom: 48px; }
 .empty-state p  { font-size: .88rem; margin-bottom: 18px; }
 
 /* ── Footer ──────────────────────────────────────────────────*/
+.route-card img { content-visibility: auto; contain-intrinsic-size: 0 200px; }
 .sp-footer {
   background: var(--nav-bg);
   color: rgba(255,255,255,.3);

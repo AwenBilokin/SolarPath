@@ -69,10 +69,11 @@ public class AdminController : Controller
         // заповнюємо всі 6 місяців (навіть якщо 0 бронювань)
         var months = new List<string>();
         var counts = new List<int>();
+        var ukMonths = new[] { "Січ", "Лют", "Бер", "Кві", "Тра", "Чер", "Лип", "Сер", "Вер", "Жов", "Лис", "Гру" };
         for (int i = 5; i >= 0; i--)
         {
             var d = DateTime.UtcNow.AddMonths(-i);
-            months.Add(d.ToString("MMM yyyy"));
+            months.Add(ukMonths[d.Month - 1] + " " + d.Year);
             var found = bookingsByMonth.FirstOrDefault(x => x.Year == d.Year && x.Month == d.Month);
             counts.Add(found?.Count ?? 0);
         }

@@ -11,7 +11,7 @@
       <img src="@(string.IsNullOrWhiteSpace(Model.ImageUrl) ? SolarPath.Web.Models.CategoryImages.GetByCategoryId(Model.CategoryId) : Model.ImageUrl)"
            onerror="this.onerror=null;this.src='@SolarPath.Web.Models.CategoryImages.GetByCategoryId(Model.CategoryId)';"
            alt="@Model.Title"/>
-      <span class="badge-difficulty badge-@Model.Difficulty.ToString().ToLower() detail-badge">@Model.Difficulty</span>
+      <span class="badge-difficulty badge-@Model.Difficulty.ToString().ToLower() detail-badge">@UkHelper.DifficultyUk(Model.Difficulty)</span>
     </div>
 
     <h1 class="detail-title">@Model.Title</h1>
