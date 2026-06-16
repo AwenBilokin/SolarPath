@@ -30,6 +30,7 @@ builder.Services.ConfigureApplicationCookie(opts => {
 builder.Services.AddScoped<IRouteService,   RouteService>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddSingleton<ICloudinaryService, CloudinaryService>();
 builder.Services.AddHostedService<PendingBookingsCleanupService>();
 
 // Для Railway — forwarded headers щоб HTTPS працював правильно

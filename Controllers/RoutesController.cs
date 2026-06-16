@@ -15,10 +15,11 @@ public class RoutesController : Controller
     private readonly ApplicationDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly ICloudinaryService _cloudinary;
 
     public RoutesController(IRouteService rs, ApplicationDbContext db,
-        UserManager<ApplicationUser> um, IWebHostEnvironment env)
-    { _routeService = rs; _db = db; _userManager = um; _env = env; }
+        UserManager<ApplicationUser> um, IWebHostEnvironment env, ICloudinaryService cloudinary)
+    { _routeService = rs; _db = db; _userManager = um; _env = env; _cloudinary = cloudinary; }
 
     public async Task<IActionResult> Index(int? categoryId, DifficultyLevel? difficulty,
         decimal? maxPrice, string? search, int page = 1)
@@ -110,12 +111,8 @@ public class RoutesController : Controller
         model.AvailableSlots = model.MaxParticipants;
         if (image != null && image.Length > 0)
         {
-            var uploads = Path.Combine(_env.WebRootPath, "uploads");
-            Directory.CreateDirectory(uploads);
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-            using var fs = System.IO.File.Create(Path.Combine(uploads, fileName));
-            await image.CopyToAsync(fs);
-            model.ImageUrl = $"/uploads/{fileName}";
+            var url = await _cloudinary.UploadImageAsync(image);
+            if (url != null) model.ImageUrl = url;
         }
         // Зберігаємо маршрут — після цього model.Id вже заповнено EF
         var saved = await _routeService.CreateAsync(model);
@@ -191,12 +188,12 @@ public class RoutesController : Controller
         existing.GeoData = model.GeoData;
         if (image != null && image.Length > 0)
         {
-            var uploads = Path.Combine(_env.WebRootPath, "uploads");
-            Directory.CreateDirectory(uploads);
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-            using var fs = System.IO.File.Create(Path.Combine(uploads, fileName));
-            await image.CopyToAsync(fs);
-            existing.ImageUrl = $"/uploads/{fileName}";
+            // Видаляємо старе фото з Cloudinary якщо є
+            if (!string.IsNullOrWhiteSpace(existing.ImageUrl))
+                await _cloudinary.DeleteImageAsync(existing.ImageUrl);
+
+            var url = await _cloudinary.UploadImageAsync(image);
+            if (url != null) existing.ImageUrl = url;
         }
 
         // Видаляємо старі точки

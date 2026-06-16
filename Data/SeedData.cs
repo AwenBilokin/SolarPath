@@ -337,6 +337,7 @@ public static class SeedData
 
         var routes = await db.Routes
             .Where(r => r.ImageUrl != null &&
+                       !r.ImageUrl.Contains("cloudinary.com") &&
                        (r.ImageUrl.StartsWith("/images/routes/")
                      || r.ImageUrl.Contains("source.unsplash.com")
                      || r.ImageUrl.Contains("images.unsplash.com")
