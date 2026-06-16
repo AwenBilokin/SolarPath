@@ -158,26 +158,40 @@ function markerIcon(type) {
 function openEditPopup(idx) {
   var pt = points[idx];
   var popupHtml =
-    '<div style="min-width:200px;font-size:13px;">' +
+    '<div style="min-width:220px;font-size:13px;">' +
     '<div style="font-weight:600;margin-bottom:6px;">Редагувати точку</div>' +
     '<input id="ep-title" value="'+pt.title.replace(/"/g,'&quot;')+'" placeholder="Назва" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;margin-bottom:6px;font-size:13px;">' +
-    '<select id="ep-type" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;margin-bottom:8px;font-size:13px;">' +
+    '<select id="ep-type" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;margin-bottom:6px;font-size:13px;">' +
     ['Start','Checkpoint','Highlight','Finish'].map(function(t) {
       return '<option value="'+t+'"'+(pt.type===t?' selected':'')+'>'+typeLabels[t]+'</option>';
     }).join('') +
     '</select>' +
+    '<div style="display:flex;gap:4px;margin-bottom:8px;">' +
+    '<input id="ep-lat" value="'+pt.lat+'" placeholder="Широта" style="flex:1;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;font-size:12px;min-width:0;">' +
+    '<input id="ep-lng" value="'+pt.lng+'" placeholder="Довгота" style="flex:1;border:1px solid #d1d5db;border-radius:6px;padding:4px 8px;font-size:12px;min-width:0;">' +
+    '</div>' +
     '<div style="display:flex;gap:6px;">' +
     '<button onclick="applyEditPopup('+idx+')" style="flex:1;background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 0;cursor:pointer;font-size:12px;">✓ Зберегти</button>' +
     '<button onclick="removePoint('+idx+');map.closePopup();" style="flex:1;background:#dc2626;color:#fff;border:none;border-radius:6px;padding:5px 0;cursor:pointer;font-size:12px;">✕ Видалити</button>' +
     '</div></div>';
-  markers[idx].unbindPopup().bindPopup(popupHtml, {maxWidth:240}).openPopup();
+  markers[idx].unbindPopup().bindPopup(popupHtml, {maxWidth:260}).openPopup();
 }
 
 function applyEditPopup(idx) {
   var newTitle = document.getElementById('ep-title').value.trim() || points[idx].title;
   var newType  = document.getElementById('ep-type').value;
+  var newLat   = parseFloat(document.getElementById('ep-lat').value);
+  var newLng   = parseFloat(document.getElementById('ep-lng').value);
+
   points[idx].title = newTitle;
   points[idx].type  = newType;
+
+  if (!isNaN(newLat) && !isNaN(newLng)) {
+    points[idx].lat = newLat.toFixed(6);
+    points[idx].lng = newLng.toFixed(6);
+    markers[idx].setLatLng([newLat, newLng]);
+  }
+
   markers[idx].setIcon(markerIcon(newType));
   map.closePopup();
   renderPointsList();
