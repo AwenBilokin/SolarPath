@@ -151,6 +151,10 @@ public class RoutesController : Controller
             _db.RoutePoints.AddRange(routePoints);
             await _db.SaveChangesAsync();
         }
+        
+        // Зберігаємо зміни маршруту після точок
+        _db.Entry(existing).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+        await _db.SaveChangesAsync();
 
         TempData["Success"] = "Маршрут успішно створено! Опублікуйте його, щоб туристи могли його побачити.";
         return RedirectToAction("Dashboard", "Guide");
