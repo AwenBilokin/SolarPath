@@ -180,12 +180,6 @@ public class RoutesController : Controller
             var routeWithPoints = await _routeService.GetByIdAsync(id);
             return View(routeWithPoints);
         }
-        existing.Title = model.Title; existing.Description = model.Description;
-        existing.Difficulty = model.Difficulty; existing.DistanceKm = model.DistanceKm;
-        existing.DurationMinutes = model.DurationMinutes; existing.MaxParticipants = model.MaxParticipants;
-        existing.PricePerPerson = model.PricePerPerson; existing.CategoryId = model.CategoryId;
-        existing.SeasonStart = model.SeasonStart; existing.SeasonEnd = model.SeasonEnd;
-        existing.GeoData = model.GeoData;
         if (image != null && image.Length > 0)
         {
             // Видаляємо старе фото з Cloudinary якщо є
@@ -200,6 +194,14 @@ public class RoutesController : Controller
         var oldPoints = await _db.RoutePoints.Where(p => p.RouteId == id).ToListAsync();
         _db.RoutePoints.RemoveRange(oldPoints);
         await _db.SaveChangesAsync();
+
+        // Оновлюємо поля маршруту ПІСЛЯ збереження точок (щоб EF трекер не скинув стан)
+        existing.Title = model.Title; existing.Description = model.Description;
+        existing.Difficulty = model.Difficulty; existing.DistanceKm = model.DistanceKm;
+        existing.DurationMinutes = model.DurationMinutes; existing.MaxParticipants = model.MaxParticipants;
+        existing.PricePerPerson = model.PricePerPerson; existing.CategoryId = model.CategoryId;
+        existing.SeasonStart = model.SeasonStart; existing.SeasonEnd = model.SeasonEnd;
+        existing.GeoData = model.GeoData;
 
         // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form
         if ((RoutePoints == null || RoutePoints.Count == 0) && Request.Form.ContainsKey("RoutePoints[0].LatitudeStr"))
@@ -237,6 +239,7 @@ public class RoutesController : Controller
         }
 
         // Зберігаємо зміни маршруту після точок
+        _db.Entry(existing).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         await _db.SaveChangesAsync();
 
         TempData["Success"] = "Маршрут оновлено!";
