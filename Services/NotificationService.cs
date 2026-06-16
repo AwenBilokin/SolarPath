@@ -62,34 +62,35 @@ public class NotificationService : INotificationService
         }
     }
 
-    private static string EmailLayout(string title, string body) => $"""
-        <!DOCTYPE html>
-        <html lang="uk">
-        <head><meta charset="utf-8"/>
-        <style>
-          body {{ font-family: 'Inter', Arial, sans-serif; background:#f6f8f6; margin:0; padding:0; }}
-          .wrap {{ max-width:560px; margin:32px auto; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.08); }}
-          .head {{ background:#15803d; padding:28px 32px; color:#fff; }}
-          .head h1 {{ margin:0; font-size:1.3rem; font-weight:700; }}
-          .head p  {{ margin:4px 0 0; opacity:.8; font-size:.85rem; }}
-          .body  {{ padding:28px 32px; color:#1a2e1f; font-size:.93rem; line-height:1.6; }}
-          .info-row {{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0; }}
-          .info-row:last-child {{ border-bottom:none; }}
-          .label {{ color:#6b7280; font-size:.85rem; }}
-          .value {{ font-weight:600; }}
-          .total {{ background:#f0fdf4; border-radius:8px; padding:14px 18px; margin:18px 0; display:flex; justify-content:space-between; align-items:center; }}
-          .total .amount {{ font-size:1.4rem; font-weight:800; color:#15803d; }}
-          .btn {{ display:inline-block; background:#15803d; color:#fff; text-decoration:none; border-radius:8px; padding:10px 22px; font-weight:600; font-size:.9rem; margin-top:16px; }}
-          .foot {{ background:#f6f8f6; padding:14px 32px; text-align:center; color:#9ca3af; font-size:.78rem; }}
-        </style></head>
-        <body>
-          <div class="wrap">
-            <div class="head"><h1>☀️ SolarPath</h1><p>{title}</p></div>
-            <div class="body">{body}</div>
-            <div class="foot">SolarPath · Туристичні маршрути України · Автоматичне повідомлення</div>
-          </div>
-        </body></html>
-        """;
+    private static string EmailLayout(string title, string body)
+    {
+        var css = @"
+          body { font-family: 'Inter', Arial, sans-serif; background:#f6f8f6; margin:0; padding:0; }
+          .wrap { max-width:560px; margin:32px auto; background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.08); }
+          .head { background:#15803d; padding:28px 32px; color:#fff; }
+          .head h1 { margin:0; font-size:1.3rem; font-weight:700; }
+          .head p  { margin:4px 0 0; opacity:.8; font-size:.85rem; }
+          .body  { padding:28px 32px; color:#1a2e1f; font-size:.93rem; line-height:1.6; }
+          .info-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0; }
+          .info-row:last-child { border-bottom:none; }
+          .label { color:#6b7280; font-size:.85rem; }
+          .value { font-weight:600; }
+          .total { background:#f0fdf4; border-radius:8px; padding:14px 18px; margin:18px 0; display:flex; justify-content:space-between; align-items:center; }
+          .total .amount { font-size:1.4rem; font-weight:800; color:#15803d; }
+          .btn { display:inline-block; background:#15803d; color:#fff; text-decoration:none; border-radius:8px; padding:10px 22px; font-weight:600; font-size:.9rem; margin-top:16px; }
+          .foot { background:#f6f8f6; padding:14px 32px; text-align:center; color:#9ca3af; font-size:.78rem; }";
+
+        return $@"<!DOCTYPE html>
+<html lang=""uk"">
+<head><meta charset=""utf-8""/><style>{css}</style></head>
+<body>
+  <div class=""wrap"">
+    <div class=""head""><h1>☀️ SolarPath</h1><p>{title}</p></div>
+    <div class=""body"">{body}</div>
+    <div class=""foot"">SolarPath · Туристичні маршрути України · Автоматичне повідомлення</div>
+  </div>
+</body></html>";
+    }
 
     // ── Квитанція про оплату ──────────────────────────────────────────────
     public async Task SendPaymentReceiptAsync(int bookingId)
