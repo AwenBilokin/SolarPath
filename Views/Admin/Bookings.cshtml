@@ -44,15 +44,29 @@
             </span>
           </td>
           <td>
-            @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.RefundRequested) {
-              <form asp-action="ProcessRefund" asp-route-id="@b.Id" method="post">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-sm btn-warning"
-                        onclick="return confirm('Підтвердити повернення @b.TotalPrice ₴?')">
-                  <i class="bi bi-arrow-counterclockwise me-1"></i>Повернути
-                </button>
-              </form>
-            }
+            <div class="d-flex gap-1 flex-wrap">
+              @if (b.BookingStatus == SolarPath.Web.Models.BookingStatus.RefundRequested) {
+                <form asp-action="ProcessRefund" asp-route-id="@b.Id" method="post">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="btn btn-sm btn-warning"
+                          onclick="return confirm('Підтвердити повернення?')">
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>Повернути
+                  </button>
+                </form>
+              }
+              @if (b.BookingStatus != SolarPath.Web.Models.BookingStatus.Cancelled &&
+                   b.BookingStatus != SolarPath.Web.Models.BookingStatus.CancelledByGuide &&
+                   b.BookingStatus != SolarPath.Web.Models.BookingStatus.Completed &&
+                   b.BookingStatus != SolarPath.Web.Models.BookingStatus.Refunded) {
+                <form asp-action="CancelBooking" asp-route-id="@b.Id" method="post">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="btn btn-sm btn-outline-danger"
+                          onclick="return confirm('Скасувати бронювання #@b.Id?')">
+                    <i class="bi bi-x-circle me-1"></i>Скасувати
+                  </button>
+                </form>
+              }
+            </div>
           </td>
         </tr>
       }

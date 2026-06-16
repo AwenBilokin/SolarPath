@@ -260,4 +260,52 @@ public class AdminController : Controller
         }
         return RedirectToAction(nameof(Users));
     }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelBooking(int id)
+    {
+        var booking = await _db.Bookings
+            .Include(b => b.Payment)
+            .FirstOrDefaultAsync(b => b.Id == id);
+
+        if (booking == null)
+        {
+            TempData["Error"] = "Бронювання не знайдено.";
+            return RedirectToAction(nameof(Bookings));
+        }
+
+        // Не можна скасувати вже завершені або вже скасовані
+        if (booking.BookingStatus == BookingStatus.Completed  ||
+            booking.BookingStatus == BookingStatus.Cancelled  ||
+            booking.BookingStatus == BookingStatus.CancelledByGuide ||
+            booking.BookingStatus == BookingStatus.Refunded)
+        {
+            TempData["Error"] = "Неможливо скасувати бронювання з поточним статусом.";
+            return RedirectToAction(nameof(Bookings));
+        }
+
+        // Повертаємо слоти маршруту
+        var route = await _db.Routes.FindAsync(booking.RouteId);
+        if (route != null)
+        {
+            route.AvailableSlots = Math.Min(
+                route.AvailableSlots + booking.ParticipantsCount,
+                route.MaxParticipants);
+        }
+
+        // Якщо є оплата — переводимо в RefundRequested, інакше просто Cancelled
+        if (booking.Payment != null && booking.Payment.RefundedAt == null)
+        {
+            booking.BookingStatus = BookingStatus.RefundRequested;
+            TempData["Success"] = $"Бронювання #{id} скасовано. Потрібно обробити повернення коштів.";
+        }
+        else
+        {
+            booking.BookingStatus = BookingStatus.Cancelled;
+            TempData["Success"] = $"Бронювання #{id} скасовано.";
+        }
+
+        await _db.SaveChangesAsync();
+        return RedirectToAction(nameof(Bookings));
+    }
 }
