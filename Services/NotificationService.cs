@@ -108,7 +108,7 @@ public class NotificationService : INotificationService
             <p>Ваша оплата успішно прийнята. Нижче деталі бронювання:</p>
             <div class="info-row"><span class="label">Маршрут</span><span class="value">{booking.Route?.Title}</span></div>
             <div class="info-row"><span class="label">Дата походу</span><span class="value">{booking.ScheduledDate:dd.MM.yyyy}</span></div>
-            <div class="info-row"><span class="label">Учасників</span><span class="value">{booking.Participants} осіб</span></div>
+            <div class="info-row"><span class="label">Учасників</span><span class="value">{booking.ParticipantsCount} осіб</span></div>
             <div class="info-row"><span class="label">Гід</span><span class="value">{booking.Route?.Guide?.FullName}</span></div>
             <div class="info-row"><span class="label">Номер бронювання</span><span class="value">#{booking.Id}</span></div>
             <div class="total"><span>Сплачено</span><span class="amount">{booking.TotalPrice:N0} ₴</span></div>
@@ -141,7 +141,7 @@ public class NotificationService : INotificationService
                 <div class="info-row"><span class="label">Маршрут</span><span class="value">{booking.Route.Title}</span></div>
                 <div class="info-row"><span class="label">Турист</span><span class="value">{booking.Tourist?.FullName}</span></div>
                 <div class="info-row"><span class="label">Дата</span><span class="value">{booking.ScheduledDate:dd.MM.yyyy}</span></div>
-                <div class="info-row"><span class="label">Учасників</span><span class="value">{booking.Participants}</span></div>
+                <div class="info-row"><span class="label">Учасників</span><span class="value">{booking.ParticipantsCount}</span></div>
                 <p style="color:#6b7280;font-size:.85rem;">Після оплати туристом — підтвердіть бронювання в кабінеті гіда.</p>
                 """;
             await SendEmailAsync(booking.Route.Guide.Email, booking.Route.Guide.FullName,
