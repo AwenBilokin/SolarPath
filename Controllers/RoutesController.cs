@@ -34,7 +34,6 @@ public class RoutesController : Controller
         return View(result);
     }
 
-    // ── підказки для пошуку (autocomplete) ───────────────────────────────
     [HttpGet]
     public async Task<IActionResult> Suggestions(string q)
     {
@@ -43,7 +42,6 @@ public class RoutesController : Controller
 
         var s = q.Trim().ToLower();
 
-        // Маршрути за назвою
         var routeRows = await _db.Routes
             .Include(r => r.Category)
             .Where(r => r.RouteStatus == RouteStatus.Published && r.Title.ToLower().Contains(s))
@@ -62,7 +60,6 @@ public class RoutesController : Controller
             url      = Url.Action("Details", "Routes", new { id = r.Id })
         });
 
-        // Категорії, що збігаються
         var categoryRows = await _db.Categories
             .Where(c => c.Name.ToLower().Contains(s))
             .Take(3)
@@ -114,10 +111,8 @@ public class RoutesController : Controller
             var url = await _cloudinary.UploadImageAsync(image);
             if (url != null) model.ImageUrl = url;
         }
-        // Зберігаємо маршрут — після цього model.Id вже заповнено EF
         var saved = await _routeService.CreateAsync(model);
 
-        // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form
         if ((RoutePoints == null || RoutePoints.Count == 0) && Request.Form.ContainsKey("RoutePoints[0].LatitudeStr"))
         {
             RoutePoints = new List<RoutePointDto>();
@@ -128,15 +123,14 @@ public class RoutesController : Controller
                 {
                     LatitudeStr  = Request.Form[$"RoutePoints[{i}].LatitudeStr"].ToString(),
                     LongitudeStr = Request.Form[$"RoutePoints[{i}].LongitudeStr"].ToString(),
-                    Title      = Request.Form[$"RoutePoints[{i}].Title"].ToString(),
-                    PointType  = Enum.TryParse<PointType>(Request.Form[$"RoutePoints[{i}].PointType"], out var pt) ? pt : PointType.Checkpoint,
-                    OrderIndex = i
+                    Title        = Request.Form[$"RoutePoints[{i}].Title"].ToString(),
+                    PointType    = Enum.TryParse<PointType>(Request.Form[$"RoutePoints[{i}].PointType"], out var pt) ? pt : PointType.Checkpoint,
+                    OrderIndex   = i
                 });
                 i++;
             }
         }
 
-        // Зберегти точки маршруту
         if (RoutePoints != null && RoutePoints.Count > 0)
         {
             var routePoints = RoutePoints.Select((p, i) => new RoutePoint
@@ -151,10 +145,6 @@ public class RoutesController : Controller
             _db.RoutePoints.AddRange(routePoints);
             await _db.SaveChangesAsync();
         }
-        
-        // Зберігаємо зміни маршруту після точок
-        _db.Entry(existing).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-        await _db.SaveChangesAsync();
 
         TempData["Success"] = "Маршрут успішно створено! Опублікуйте його, щоб туристи могли його побачити.";
         return RedirectToAction("Dashboard", "Guide");
@@ -184,12 +174,11 @@ public class RoutesController : Controller
             var routeWithPoints = await _routeService.GetByIdAsync(id);
             return View(routeWithPoints);
         }
+
         if (image != null && image.Length > 0)
         {
-            // Видаляємо старе фото з Cloudinary якщо є
             if (!string.IsNullOrWhiteSpace(existing.ImageUrl))
                 await _cloudinary.DeleteImageAsync(existing.ImageUrl);
-
             var url = await _cloudinary.UploadImageAsync(image);
             if (url != null) existing.ImageUrl = url;
         }
@@ -199,7 +188,7 @@ public class RoutesController : Controller
         _db.RoutePoints.RemoveRange(oldPoints);
         await _db.SaveChangesAsync();
 
-        // Оновлюємо поля маршруту ПІСЛЯ збереження точок (щоб EF трекер не скинув стан)
+        // Оновлюємо поля маршруту після SaveChanges для точок
         existing.Title = model.Title; existing.Description = model.Description;
         existing.Difficulty = model.Difficulty; existing.DistanceKm = model.DistanceKm;
         existing.DurationMinutes = model.DurationMinutes; existing.MaxParticipants = model.MaxParticipants;
@@ -207,7 +196,6 @@ public class RoutesController : Controller
         existing.SeasonStart = model.SeasonStart; existing.SeasonEnd = model.SeasonEnd;
         existing.GeoData = model.GeoData;
 
-        // Fallback: якщо ModelBinder не зміг збайндити RoutePoints — парсимо вручну з Form
         if ((RoutePoints == null || RoutePoints.Count == 0) && Request.Form.ContainsKey("RoutePoints[0].LatitudeStr"))
         {
             RoutePoints = new List<RoutePointDto>();
@@ -218,15 +206,14 @@ public class RoutesController : Controller
                 {
                     LatitudeStr  = Request.Form[$"RoutePoints[{i}].LatitudeStr"].ToString(),
                     LongitudeStr = Request.Form[$"RoutePoints[{i}].LongitudeStr"].ToString(),
-                    Title      = Request.Form[$"RoutePoints[{i}].Title"].ToString(),
-                    PointType  = Enum.TryParse<PointType>(Request.Form[$"RoutePoints[{i}].PointType"], out var pt) ? pt : PointType.Checkpoint,
-                    OrderIndex = i
+                    Title        = Request.Form[$"RoutePoints[{i}].Title"].ToString(),
+                    PointType    = Enum.TryParse<PointType>(Request.Form[$"RoutePoints[{i}].PointType"], out var pt) ? pt : PointType.Checkpoint,
+                    OrderIndex   = i
                 });
                 i++;
             }
         }
 
-        // Додаємо нові точки
         if (RoutePoints != null && RoutePoints.Count > 0)
         {
             var newPoints = RoutePoints.Select((p, i) => new RoutePoint
@@ -242,7 +229,6 @@ public class RoutesController : Controller
             await _db.SaveChangesAsync();
         }
 
-        // Зберігаємо зміни маршруту після точок
         _db.Entry(existing).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         await _db.SaveChangesAsync();
 
