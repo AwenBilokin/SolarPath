@@ -64,15 +64,15 @@
         <div class="row g-2 align-items-end">
           <div class="col-md-3">
             <label class="form-label small mb-1">Назва точки</label>
-            <input type="text" id="pt-title" class="form-control form-control-sm" placeholder="напр. Старт — Яремче"/>
+            <input type="text" id="pt-title" class="form-control form-control-sm" placeholder="напр. Старт — Яремче" onkeydown="if(event.key==='Enter'){event.preventDefault();addPointManual();}"/>
           </div>
           <div class="col-md-2">
             <label class="form-label small mb-1">Широта</label>
-            <input type="number" id="pt-lat" step="0.000001" class="form-control form-control-sm"/>
+            <input type="number" id="pt-lat" step="0.000001" class="form-control form-control-sm" onkeydown="if(event.key==='Enter'){event.preventDefault();addPointManual();}"/>
           </div>
           <div class="col-md-2">
             <label class="form-label small mb-1">Довгота</label>
-            <input type="number" id="pt-lng" step="0.000001" class="form-control form-control-sm"/>
+            <input type="number" id="pt-lng" step="0.000001" class="form-control form-control-sm" onkeydown="if(event.key==='Enter'){event.preventDefault();addPointManual();}"/>
           </div>
           <div class="col-md-3">
             <label class="form-label small mb-1">Тип</label>
@@ -203,10 +203,19 @@ function addPoint(pt, updateView) {
   if (updateView === undefined) updateView = true;
   var idx = points.length;
   points.push(pt);
-  var marker = L.marker([pt.lat, pt.lng], {icon: markerIcon(pt.type)})
+  var marker = L.marker([pt.lat, pt.lng], {icon: markerIcon(pt.type), draggable: true})
     .on('click', function(e) {
       L.DomEvent.stopPropagation(e);
       openEditPopup(markers.indexOf(this));
+    })
+    .on('dragend', function(e) {
+      var i = markers.indexOf(this);
+      var ll = this.getLatLng();
+      points[i].lat = ll.lat.toFixed(6);
+      points[i].lng = ll.lng.toFixed(6);
+      renderPointsList();
+      renderHiddenFields();
+      updateMapLine();
     })
     .addTo(map);
   markers.push(marker);
