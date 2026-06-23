@@ -1,0 +1,40 @@
+@{ViewData["Title"] = "Вхід";}
+
+<div class="row justify-content-center py-4">
+  <div class="col-md-5 col-lg-4">
+    <div class="auth-card">
+      <div class="text-center mb-4">
+        <div style="width:48px;height:48px;background:linear-gradient(135deg,#22c55e,#16a34a);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <i class="bi bi-sun-fill text-white fs-5"></i>
+        </div>
+        <h4 class="fw-800 mb-1" style="letter-spacing:-.02em;">Вхід до SolarPath</h4>
+        <p class="text-muted" style="font-size:.875rem;">Раді бачити тебе знову</p>
+      </div>
+      @if (!ViewData.ModelState.IsValid) {
+        <div class="alert alert-danger mb-3">
+          @foreach (var e in ViewData.ModelState.Values.SelectMany(v => v.Errors)) { <div>@e.ErrorMessage</div> }
+        </div>
+      }
+      <form asp-action="Login" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl"/>
+        <div class="mb-3">
+          <label class="form-label fw-600" style="font-size:.875rem;">Email</label>
+          <input type="email" name="email" class="form-control" placeholder="you@example.com" required autofocus/>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-600" style="font-size:.875rem;">Пароль</label>
+          <input type="password" name="password" class="form-control" placeholder="••••••" required/>
+        </div>
+        <div class="mb-4 d-flex align-items-center gap-2">
+          <input type="checkbox" name="rememberMe" id="rem" class="form-check-input m-0"/>
+          <label for="rem" style="font-size:.875rem;color:#6b7280;">Запам'ятати мене</label>
+        </div>
+        <button type="submit" class="btn btn-success w-100 py-2 mb-4" style="font-size:.9375rem;">Увійти</button>
+        <p class="text-center mb-0" style="font-size:.875rem;color:#6b7280;">
+          Немає акаунту? <a asp-action="Register" class="fw-600">Зареєструватись</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

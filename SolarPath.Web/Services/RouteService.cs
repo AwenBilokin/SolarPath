@@ -1,0 +1,126 @@
+using Microsoft.EntityFrameworkCore;
+using SolarPath.Web.Data;
+using SolarPath.Web.Models;
+
+namespace SolarPath.Web.Services;
+
+public class RouteService : IRouteService
+{
+    private readonly ApplicationDbContext _db;
+    public RouteService(ApplicationDbContext db) => _db = db;
+
+    public async Task<IEnumerable<Models.Route>> GetPublishedAsync(
+        int? categoryId, DifficultyLevel? difficulty, decimal? maxPrice, string? search)
+    {
+        var q = _db.Routes
+            .Include(r => r.Category)
+            .Include(r => r.Guide)
+            .Include(r => r.Reviews)
+            .Where(r => r.RouteStatus == RouteStatus.Published);
+
+        if (categoryId.HasValue)  q = q.Where(r => r.CategoryId == categoryId);
+        if (difficulty.HasValue)  q = q.Where(r => r.Difficulty == difficulty);
+        if (maxPrice.HasValue)    q = q.Where(r => r.PricePerPerson <= maxPrice);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim().ToLower();
+            q = q.Where(r =>
+                r.Title.ToLower().Contains(s) ||
+                r.Description.ToLower().Contains(s) ||
+                r.Category!.Name.ToLower().Contains(s));
+        }
+
+        return await q.OrderByDescending(r => r.CreatedAt).ToListAsync();
+    }
+
+    public async Task<PagedResult<Models.Route>> GetPublishedPagedAsync(
+        int? categoryId, DifficultyLevel? difficulty, decimal? maxPrice, string? search, int page, int pageSize)
+    {
+        var q = _db.Routes
+            .Include(r => r.Category)
+            .Include(r => r.Guide)
+            .Include(r => r.Reviews)
+            .Where(r => r.RouteStatus == RouteStatus.Published);
+
+        if (categoryId.HasValue)  q = q.Where(r => r.CategoryId == categoryId);
+        if (difficulty.HasValue)  q = q.Where(r => r.Difficulty == difficulty);
+        if (maxPrice.HasValue)    q = q.Where(r => r.PricePerPerson <= maxPrice);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var s = search.Trim().ToLower();
+            q = q.Where(r =>
+                r.Title.ToLower().Contains(s) ||
+                r.Description.ToLower().Contains(s) ||
+                r.Category!.Name.ToLower().Contains(s));
+        }
+
+        page = Math.Max(1, page);
+        pageSize = pageSize <= 0 ? 9 : pageSize;
+
+        var total = await q.CountAsync();
+        var items = await q.OrderByDescending(r => r.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return new PagedResult<Models.Route>
+        {
+            Items = items,
+            TotalCount = total,
+            Page = page,
+            PageSize = pageSize
+        };
+    }
+
+    public async Task<Models.Route?> GetByIdAsync(int id)
+    {
+        var route = await _db.Routes
+            .AsNoTracking()
+            .Include(r => r.Category)
+            .Include(r => r.Guide)
+            .Include(r => r.Reviews).ThenInclude(rv => rv.Tourist)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (route != null)
+        {
+            route.Points = await _db.Set<RoutePoint>()
+                .AsNoTracking()
+                .Where(p => p.RouteId == id)
+                .OrderBy(p => p.OrderIndex)
+                .ToListAsync();
+        }
+
+        return route;
+    }
+
+    public async Task<Models.Route> CreateAsync(Models.Route route)
+    {
+        _db.Routes.Add(route);
+        await _db.SaveChangesAsync();
+        return route;
+    }
+
+    public async Task UpdateAsync(Models.Route route)
+    {
+        _db.Routes.Update(route);
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task PublishAsync(int id)
+    {
+        var route = await _db.Routes.FindAsync(id);
+        if (route != null)
+        {
+            route.RouteStatus = RouteStatus.Published;
+            await _db.SaveChangesAsync();
+        }
+    }
+
+    public async Task<IEnumerable<Models.Route>> GetByGuideAsync(string guideId) =>
+        await _db.Routes
+            .Include(r => r.Category)
+            .Include(r => r.Bookings)
+            .Where(r => r.GuideId == guideId)
+            .OrderByDescending(r => r.CreatedAt)
+            .ToListAsync();
+}
